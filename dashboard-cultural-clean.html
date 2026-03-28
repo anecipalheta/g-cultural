@@ -1054,6 +1054,156 @@ body {
 .toast.show { opacity: 1; transform: translateY(0); }
 
 /* ═══════════════════════════════════════════════
+   PAINEL DE TAREFAS (overlay lateral)
+   ═══════════════════════════════════════════════ */
+.task-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0,0,0,.45);
+}
+.task-overlay.open { display: flex; justify-content: flex-end; }
+
+.task-panel {
+  width: 680px;
+  max-width: 95vw;
+  background: var(--surface);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -8px 0 40px rgba(0,0,0,.15);
+  overflow: hidden;
+}
+
+.task-panel-hd {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  background: var(--surface-2);
+  flex-shrink: 0;
+}
+.task-panel-title { font-size: 13px; font-weight: 600; color: var(--text-1); letter-spacing: -.01em; }
+.task-panel-meta  { font-size: 10px; color: var(--text-3); margin-top: 3px; display: flex; gap: 8px; align-items: center; }
+.task-panel-close {
+  width: 26px; height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-2);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.task-panel-close:hover { background: var(--surface-3); }
+
+.task-panel-toolbar {
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  background: var(--surface);
+}
+
+.task-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+/* Tabela de tarefas */
+.task-tbl { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.task-tbl th {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-3);
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  background: var(--surface-2);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.task-tbl td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  font-size: 10.5px;
+  color: var(--text-1);
+}
+.task-tbl tr:last-child td { border-bottom: none; }
+.task-tbl tbody tr:hover td { background: var(--surface-2); }
+
+/* Pills de prioridade */
+.pri { font-size: 9px; font-weight: 600; padding: 2px 8px; border-radius: 12px; display: inline-block; white-space: nowrap; }
+.pri-alta  { background: var(--red-bg);    color: var(--red-text);    border: 1px solid var(--red-border); }
+.pri-media { background: var(--amber-bg);  color: var(--amber-text);  border: 1px solid var(--amber-border); }
+.pri-baixa { background: var(--blue-bg);   color: var(--blue-text);   border: 1px solid var(--blue-border); }
+
+/* Pills de status de tarefa */
+.tstatus { font-size: 9px; font-weight: 500; padding: 2px 8px; border-radius: 12px; display: inline-block; white-space: nowrap; }
+.ts-naoiniciado { background: var(--surface-2); color: var(--text-3);    border: 1px solid var(--border); }
+.ts-espera      { background: var(--purple-bg);  color: var(--purple-text); border: 1px solid var(--purple-border); }
+.ts-andamento   { background: var(--blue-bg);    color: var(--blue-text);   border: 1px solid var(--blue-border); }
+.ts-iniciado    { background: var(--green-bg);   color: var(--green-text);  border: 1px solid var(--green-border); }
+.ts-atrasado    { background: var(--red-bg);     color: var(--red-text);    border: 1px solid var(--red-border); }
+.ts-concluido   { background: var(--green-bg);   color: var(--green-text);  border: 1px solid var(--green-border); font-style: italic; }
+
+/* Linha de tarefa editável inline */
+.task-edit-row td { background: var(--blue-bg) !important; }
+.task-input-sm {
+  width: 100%;
+  font-size: 10px;
+  padding: 4px 6px;
+  border: 1px solid var(--blue-border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text-1);
+  font-family: inherit;
+  outline: none;
+}
+.task-input-sm:focus { border-color: var(--blue); }
+.task-select-sm {
+  font-size: 10px;
+  padding: 4px 6px;
+  border: 1px solid var(--border-med);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text-1);
+  font-family: inherit;
+  outline: none;
+  width: 100%;
+}
+
+/* Gantt row clicável */
+.gantt-row { cursor: pointer; }
+.gantt-row:hover .gantt-name { color: var(--blue); }
+.gantt-row:hover .gantt-track { outline: 1px solid var(--blue-border); border-radius: 4px; }
+.gantt-row-selected .gantt-name { color: var(--blue) !important; font-weight: 600; }
+.gantt-row-selected .gantt-track { outline: 2px solid var(--blue); border-radius: 4px; }
+
+/* Vazio no painel */
+.task-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 10px;
+  color: var(--text-3);
+}
+
+/* ═══════════════════════════════════════════════
    PLACEHOLDER PARA ABAS NÃO IMPLEMENTADAS
    ═══════════════════════════════════════════════ */
 .tab-placeholder {
@@ -1515,6 +1665,14 @@ body {
           <path d="M12 8.5A5.5 5.5 0 015.5 2a5.5 5.5 0 100 10A5.5 5.5 0 0012 8.5z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
         </svg>
       </button>
+      <button class="theme-btn" onclick="openModalNovoProjeto()" title="Novo projeto" style="width:auto;padding:0 10px;gap:5px;font-size:10px;color:rgba(255,255,255,.6)">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Novo projeto
+      </button>
+      <button class="theme-btn" onclick="logout()" title="Sair" style="width:auto;padding:0 10px;gap:5px;font-size:10px;color:rgba(255,255,255,.45)">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2.5A1.5 1.5 0 001 3.5v6A1.5 1.5 0 002.5 11H5M8.5 9l3-2.5L8.5 4M4.5 6.5h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Sair
+      </button>
     </div>
   </header>
 
@@ -1753,13 +1911,13 @@ body {
   <div id="tab-execucao" class="tab-content">
     <!-- Toolbar -->
     <div class="toolbar">
-      <select class="form-select-sm" id="filter-fase" onchange="filterAtividades()">
+      <select class="form-select-sm" id="filter-fase" onchange="renderGantt()">
         <option value="">Todas as fases</option>
         <option value="pre">Pré-produção</option>
         <option value="prod">Produção</option>
         <option value="pos">Pós-produção</option>
       </select>
-      <select class="form-select-sm" id="filter-status" onchange="filterAtividades()">
+      <select class="form-select-sm" id="filter-status-gantt" onchange="renderGantt()">
         <option value="">Todos os status</option>
         <option value="concluido">Concluído</option>
         <option value="andamento">Em andamento</option>
@@ -1769,31 +1927,38 @@ body {
       <div class="toolbar-sep"></div>
       <span style="font-size:10px;color:var(--text-3)" id="ativ-count">0 atividades</span>
       <div class="toolbar-right">
-        <button class="btn" onclick="switchView('gantt')" id="btn-gantt" style="border-color:var(--blue);color:var(--blue)">Gantt</button>
-        <button class="btn" onclick="switchView('lista')" id="btn-lista">Lista</button>
-        <div class="toolbar-sep"></div>
-        <button class="btn btn-primary" onclick="openModalOcorrencia()">+ Registrar ocorrência</button>
+        <button class="btn" onclick="openModalAtividade()">+ Nova atividade</button>
+        <button class="btn" id="btn-remover-ativ" onclick="removerAtividadeSelecionada()"
+          style="display:none;color:var(--red);border-color:var(--red-border)">
+          Remover atividade
+        </button>
       </div>
     </div>
 
-    <!-- Gantt completo -->
-    <div id="view-gantt" class="card" style="margin-bottom:12px">
+    <!-- Gantt dinâmico -->
+    <div class="card" id="gantt-card">
       <div class="card-hd">
-        <div><div class="card-title">Cronograma de execução</div><div class="card-sub" id="gantt-sub">Adicione atividades para visualizar o cronograma</div></div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:9.5px;color:var(--red)" id="gantt-hoje-lbl" style="display:none">
+        <div>
+          <div class="card-title">Cronograma de execução</div>
+          <div class="card-sub" id="gantt-sub">Clique em uma atividade para ver as tarefas</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:9.5px;color:var(--red)">
           <div style="width:10px;height:2px;background:var(--red);border-radius:1px"></div>
           Hoje
         </div>
       </div>
-      <!-- Cabeçalho de meses — gerado dinamicamente -->
-      <div id="gantt-header"></div>
-      <!-- Fases e barras — geradas dinamicamente -->
+      <!-- Cabeçalho de meses -->
+      <div id="gantt-header" style="display:grid;grid-template-columns:130px 1fr 54px;margin-bottom:6px">
+        <div></div>
+        <div id="gantt-meses" style="display:grid;font-size:8.5px;color:var(--text-3);text-align:center;border-bottom:1px solid var(--border);padding-bottom:4px"></div>
+        <div></div>
+      </div>
+      <!-- Fases e barras -->
       <div id="gantt-body">
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 16px;gap:10px">
+        <div class="task-empty">
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none" style="opacity:.2"><rect x="4" y="6" width="28" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M12 2v4M24 2v4M4 14h28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 21h6M10 25h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          <div style="font-size:12px;font-weight:500;color:var(--text-3)">Nenhuma atividade cadastrada</div>
-          <div style="font-size:10.5px;color:var(--text-3)">Use o botão abaixo para adicionar a primeira atividade</div>
-          <button class="btn btn-primary" style="margin-top:4px" onclick="openModalAtividade()">+ Adicionar atividade</button>
+          <div style="font-size:12px;font-weight:500">Nenhuma atividade cadastrada</div>
+          <div style="font-size:10.5px">Use o botão "+ Nova atividade" para começar</div>
         </div>
       </div>
       <div class="gantt-legend" id="gantt-legend" style="display:none">
@@ -1802,45 +1967,6 @@ body {
         <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:var(--red)"></div>Em atraso</div>
         <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:#9ca3af;opacity:.6"></div>Pendente</div>
         <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:var(--amber);opacity:.7"></div>Contrapartida</div>
-        <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:var(--purple);opacity:.5"></div>Contínuo</div>
-      </div>
-    </div>
-
-    <!-- Lista de atividades -->
-    <div id="view-lista" class="card" style="display:none">
-      <div class="card-hd">
-        <div><div class="card-title">Lista de atividades</div><div class="card-sub">8 ocorrências registradas de 14 previstas · clique em uma linha para detalhes</div></div>
-        <button class="btn btn-primary" onclick="openModalAtividade()">+ Nova atividade</button>
-      </div>
-      <div style="overflow-x:auto">
-        <table class="tbl" id="ativ-table">
-          <thead>
-            <tr>
-              <th style="width:30px"></th>
-              <th>Atividade</th>
-              <th>Tipo</th>
-              <th>Fase</th>
-              <th>Responsável</th>
-              <th>Prazo</th>
-              <th>Público prev. / ating.</th>
-              <th>Execução</th>
-              <th>Status</th>
-              <th>Docs</th>
-            </tr>
-          </thead>
-          <tbody id="ativ-tbody">
-            <!-- Preenchido via JS -->
-          </tbody>
-          <tfoot>
-            <tr style="background:var(--surface-2)">
-              <td colspan="6" style="font-size:10px;font-weight:600;color:var(--text-2)">Total</td>
-              <td style="font-size:10px;font-weight:600;color:var(--blue)">0 / 0 pessoas</td>
-              <td style="font-size:10px;font-weight:600;color:var(--green)">0%</td>
-              <td style="font-size:10px;color:var(--text-2)">0 concluídas</td>
-              <td style="font-size:10px;color:var(--amber)">0 pend.</td>
-            </tr>
-          </tfoot>
-        </table>
       </div>
     </div>
   </div>
@@ -2015,17 +2141,13 @@ body {
       </div>
       <div class="grid-2">
         <div class="form-group">
-          <label class="form-label">Nº de ocorrências previstas</label>
-          <input class="form-input" type="number" id="ativ-ocorrencias" value="1" min="1">
-        </div>
-        <div class="form-group">
           <label class="form-label">Público total previsto</label>
           <input class="form-input" type="number" id="ativ-pub-prev" placeholder="0">
         </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Produto entregável</label>
-        <input class="form-input" type="text" id="ativ-produto" placeholder="Ex: Relatório + lista de presença + fotos">
+        <div class="form-group">
+          <label class="form-label">Produto entregável</label>
+          <input class="form-input" type="text" id="ativ-produto" placeholder="Ex: Relatório + lista de presença + fotos">
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -2034,6 +2156,80 @@ body {
         <button class="btn" onclick="closeModal('modal-atividade')">Cancelar</button>
         <button class="btn btn-primary" onclick="saveAtividade()">Salvar atividade</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAINEL DE TAREFAS — OVERLAY LATERAL
+     ═══════════════════════════════════════════ -->
+<div class="task-overlay" id="task-overlay" onclick="fecharPainelTarefas(event)">
+  <div class="task-panel">
+    <div class="task-panel-hd">
+      <div>
+        <div class="task-panel-title" id="tp-titulo">—</div>
+        <div class="task-panel-meta">
+          <span id="tp-fase">—</span>
+          <span style="color:var(--border)">·</span>
+          <span id="tp-tipo">—</span>
+          <span style="color:var(--border)">·</span>
+          <span id="tp-resp">—</span>
+        </div>
+      </div>
+      <button class="task-panel-close" onclick="document.getElementById('task-overlay').classList.remove('open')">×</button>
+    </div>
+    <div class="task-panel-toolbar">
+      <button class="btn btn-primary" style="font-size:10px" onclick="novaTarefa()">+ Nova tarefa</button>
+      <span style="font-size:10px;color:var(--text-3)" id="tp-count">0 tarefas</span>
+    </div>
+    <div class="task-panel-body">
+      <div id="tp-vazio" class="task-empty">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="opacity:.25"><rect x="3" y="3" width="22" height="22" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 10h12M8 14h8M8 18h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div style="font-size:11px;font-weight:500">Nenhuma tarefa cadastrada</div>
+        <div style="font-size:10px">Use "+ Nova tarefa" para adicionar</div>
+      </div>
+      <table class="task-tbl" id="tp-tabela" style="display:none">
+        <thead>
+          <tr>
+            <th style="width:22%">Tarefa</th>
+            <th style="width:20%">Descrição</th>
+            <th style="width:13%">Responsável</th>
+            <th style="width:9%">Prioridade</th>
+            <th style="width:9%">Início</th>
+            <th style="width:9%">Final</th>
+            <th style="width:11%">Status</th>
+            <th style="width:7%"></th>
+          </tr>
+        </thead>
+        <tbody id="tp-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MODAL — NOVO PROJETO
+     ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-novo-projeto">
+  <div class="modal">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-title">Novo projeto</div>
+        <div class="modal-sub">Os dados serão preenchidos pelo onboarding. Confirme para começar.</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-novo-projeto')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:8px;padding:12px 14px;display:flex;gap:10px">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px"><path d="M8 2l6 11H2L8 2z" stroke="var(--amber)" stroke-width="1.2" stroke-linejoin="round" fill="none"/><path d="M8 7v3M8 11.5h.01" stroke="var(--amber)" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <div style="font-size:10.5px;color:var(--amber-text);line-height:1.6">
+          Criar um novo projeto irá iniciar o assistente de configuração. Os dados do projeto atual continuarão salvos e poderão ser acessados pelo seletor no header.
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-novo-projeto')">Cancelar</button>
+      <button class="btn btn-primary" onclick="criarNovoProjeto()">Configurar novo projeto →</button>
     </div>
   </div>
 </div>
@@ -2149,7 +2345,7 @@ function switchTab(tab) {
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
-  if (tab === 'execucao') renderAtividades();
+  if (tab === 'execucao') renderGantt();
 }
 
 /* ── LIGHT / DARK MODE ── */
@@ -2190,16 +2386,352 @@ function switchProject(id) {
   showToast('Projeto alterado: ' + p.nome);
 }
 
-/* ── VISUALIZAÇÃO DO CRONOGRAMA (GANTT / LISTA) ── */
-function switchView(view) {
-  document.getElementById('view-gantt').style.display = view === 'gantt' ? 'block' : 'none';
-  document.getElementById('view-lista').style.display = view === 'lista' ? 'block' : 'none';
-  document.getElementById('btn-gantt').style.borderColor = view === 'gantt' ? 'var(--blue)' : '';
-  document.getElementById('btn-gantt').style.color       = view === 'gantt' ? 'var(--blue)' : '';
-  document.getElementById('btn-lista').style.borderColor = view === 'lista' ? 'var(--blue)' : '';
-  document.getElementById('btn-lista').style.color       = view === 'lista' ? 'var(--blue)' : '';
-  if (view === 'lista') renderAtividades();
+/* ── DADOS DE TAREFAS ── */
+let TAREFAS = JSON.parse(localStorage.getItem('gc-tarefas') || '{}');
+/* Estrutura: { 'A1': [ {id, nome, desc, responsavel, prioridade, inicio, final, status}, ... ] } */
+
+function salvarTarefas() {
+  localStorage.setItem('gc-tarefas', JSON.stringify(TAREFAS));
 }
+
+/* ── ATIVIDADE SELECIONADA NO GANTT ── */
+let ativSelecionadaId = null;
+
+/* ── RENDER GANTT DINÂMICO ── */
+function renderGantt() {
+  const body    = document.getElementById('gantt-body');
+  const legend  = document.getElementById('gantt-legend');
+  const mesesEl = document.getElementById('gantt-meses');
+  const sub     = document.getElementById('gantt-sub');
+  const count   = document.getElementById('ativ-count');
+
+  /* Atualiza status atrasado antes de renderizar */
+  verificarAtrasos();
+
+  const faseF   = (document.getElementById('filter-fase') || {}).value || '';
+  const statusF = (document.getElementById('filter-status-gantt') || {}).value || '';
+
+  let lista = ATIVIDADES.filter(a => {
+    if (faseF   && a.fase   !== faseF)   return false;
+    if (statusF && a.status !== statusF) return false;
+    return true;
+  });
+
+  count.textContent = lista.length + ' atividade' + (lista.length !== 1 ? 's' : '');
+
+  if (lista.length === 0) {
+    body.innerHTML = `<div class="task-empty">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" style="opacity:.2"><rect x="4" y="6" width="28" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M12 2v4M24 2v4M4 14h28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 21h6M10 25h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div style="font-size:12px;font-weight:500">Nenhuma atividade cadastrada</div>
+      <div style="font-size:10.5px">Use o botão "+ Nova atividade" para começar</div>
+    </div>`;
+    mesesEl.innerHTML = '';
+    if (legend) legend.style.display = 'none';
+    return;
+  }
+
+  /* Determina período (min início / max término) */
+  const cfg = loadConfig() || {};
+  const hoje = new Date();
+
+  /* Usa datas das atividades para calcular span */
+  let dMin = null, dMax = null;
+  lista.forEach(a => {
+    if (a.inicio)  { const d = new Date(a.inicio);  if (!dMin || d < dMin) dMin = d; }
+    if (a.termino) { const d = new Date(a.termino); if (!dMax || d > dMax) dMax = d; }
+  });
+  /* Fallback: datas do projeto no config */
+  if (!dMin && cfg.inicio)  dMin = new Date(cfg.inicio);
+  if (!dMax && cfg.termino) dMax = new Date(cfg.termino);
+  /* Fallback absoluto */
+  if (!dMin) dMin = new Date(hoje.getFullYear(), 0, 1);
+  if (!dMax) dMax = new Date(hoje.getFullYear(), 11, 31);
+
+  /* Ajusta para início/fim de mês */
+  dMin = new Date(dMin.getFullYear(), dMin.getMonth(), 1);
+  dMax = new Date(dMax.getFullYear(), dMax.getMonth() + 1, 0);
+
+  const totalDias = (dMax - dMin) / 86400000 + 1;
+
+  /* Cabeçalho de meses */
+  const MESES_BR = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  let mesesHTML = '';
+  let cur = new Date(dMin);
+  while (cur <= dMax) {
+    const diasMes = new Date(cur.getFullYear(), cur.getMonth() + 1, 0).getDate();
+    const pct = (diasMes / totalDias * 100).toFixed(1);
+    mesesHTML += `<span style="width:${pct}%;text-align:center;font-size:8.5px;color:var(--text-3)">${MESES_BR[cur.getMonth()]}/${String(cur.getFullYear()).slice(2)}</span>`;
+    cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
+  }
+  mesesEl.style.display = 'flex';
+  mesesEl.innerHTML = mesesHTML;
+
+  /* Posição de "hoje" */
+  const hojePct = Math.min(100, Math.max(0, ((hoje - dMin) / 86400000) / totalDias * 100)).toFixed(1);
+
+  /* Renderiza fases e atividades */
+  const STATUS_BAR_COLOR = {
+    concluido: 'var(--green)', andamento: 'var(--blue)',
+    atraso: 'var(--red)', pendente: '#9ca3af',
+    contrapartida: 'var(--amber)',
+  };
+
+  let html = '';
+  let faseAtual = null;
+
+  lista.forEach(a => {
+    if (a.fase !== faseAtual) {
+      faseAtual = a.fase;
+      html += `<div class="gantt-phase">${FASE_LABELS[a.fase] || a.fase}</div>`;
+    }
+
+    /* Calcula posição e largura da barra */
+    let left = 0, width = 100;
+    if (a.inicio && a.termino) {
+      const di = new Date(a.inicio);
+      const df = new Date(a.termino);
+      left  = Math.max(0, (di - dMin) / 86400000 / totalDias * 100);
+      width = Math.max(1, (df - di) / 86400000 / totalDias * 100);
+      if (left + width > 100) width = 100 - left;
+    }
+
+    const cor    = STATUS_BAR_COLOR[a.status] || '#9ca3af';
+    const selecionada = ativSelecionadaId === a.id;
+    const tarefasCount = (TAREFAS[a.id] || []).length;
+
+    html += `
+      <div class="gantt-row${selecionada ? ' gantt-row-selected' : ''}"
+           onclick="abrirPainelTarefas('${a.id}')" title="Clique para ver tarefas">
+        <div class="gantt-name" style="${selecionada ? 'color:var(--blue);font-weight:600' : ''}">
+          <span style="font-size:9px;opacity:.6;margin-right:4px">${a.id}</span>${a.nome}
+          ${tarefasCount > 0 ? `<span style="font-size:8px;background:var(--blue-bg);color:var(--blue-text);padding:1px 5px;border-radius:8px;margin-left:4px">${tarefasCount}</span>` : ''}
+        </div>
+        <div class="gantt-track">
+          <div class="gantt-today" style="left:${hojePct}%"></div>
+          <div class="gantt-bar" style="left:${left.toFixed(1)}%;width:${width.toFixed(1)}%;background:${cor}">
+            ${a.execPct > 0 ? a.execPct + '%' : ''}
+          </div>
+        </div>
+        <div class="gantt-date" style="${a.status==='atraso'?'color:var(--red)':''}">${a.prazo || '—'}</div>
+      </div>`;
+  });
+
+  body.innerHTML = html;
+  if (legend) legend.style.display = 'flex';
+  sub.textContent = 'Clique em uma atividade para ver as tarefas · linha vermelha = hoje';
+}
+
+/* ── VERIFICAR ATRASOS AUTOMATICAMENTE ── */
+function verificarAtrasos() {
+  const hoje = new Date();
+  hoje.setHours(0,0,0,0);
+  let alterou = false;
+  ATIVIDADES.forEach(a => {
+    if (a.status === 'concluido') return;
+    if (a.termino) {
+      const dt = new Date(a.termino);
+      dt.setHours(0,0,0,0);
+      if (dt < hoje && a.status !== 'atraso') {
+        a.status = 'atraso';
+        alterou = true;
+      }
+    }
+    /* Verifica tarefas da atividade */
+    (TAREFAS[a.id] || []).forEach(t => {
+      if (t.status === 'concluido') return;
+      if (t.final) {
+        const dt = new Date(t.final);
+        dt.setHours(0,0,0,0);
+        if (dt < hoje && t.status !== 'atrasado') {
+          t.status = 'atrasado';
+          alterou = true;
+        }
+      }
+    });
+  });
+  if (alterou) { salvarAtividades(); salvarTarefas(); }
+}
+
+/* ── PAINEL DE TAREFAS ── */
+function abrirPainelTarefas(ativId) {
+  const ativ = ATIVIDADES.find(a => a.id === ativId);
+  if (!ativ) return;
+
+  ativSelecionadaId = ativId;
+
+  /* Atualiza destaque no gantt */
+  renderGantt();
+
+  /* Preenche cabeçalho */
+  document.getElementById('tp-titulo').textContent = ativ.nome;
+  document.getElementById('tp-fase').textContent   = FASE_LABELS[ativ.fase] || ativ.fase;
+  document.getElementById('tp-tipo').textContent   = ativ.tipo || '—';
+  document.getElementById('tp-resp').textContent   = ativ.responsavel || '—';
+
+  renderTarefas(ativId);
+
+  /* Botão remover atividade fica visível */
+  const btnRem = document.getElementById('btn-remover-ativ');
+  if (btnRem) btnRem.style.display = 'inline-flex';
+
+  document.getElementById('task-overlay').classList.add('open');
+}
+
+function fecharPainelTarefas(e) {
+  if (e.target === document.getElementById('task-overlay')) {
+    document.getElementById('task-overlay').classList.remove('open');
+    ativSelecionadaId = null;
+    const btnRem = document.getElementById('btn-remover-ativ');
+    if (btnRem) btnRem.style.display = 'none';
+    renderGantt();
+  }
+}
+
+function renderTarefas(ativId) {
+  const tarefas = TAREFAS[ativId] || [];
+  const vazio   = document.getElementById('tp-vazio');
+  const tabela  = document.getElementById('tp-tabela');
+  const tbody   = document.getElementById('tp-tbody');
+  const count   = document.getElementById('tp-count');
+
+  count.textContent = tarefas.length + ' tarefa' + (tarefas.length !== 1 ? 's' : '');
+
+  if (tarefas.length === 0) {
+    vazio.style.display  = 'flex';
+    tabela.style.display = 'none';
+    return;
+  }
+
+  vazio.style.display  = 'none';
+  tabela.style.display = 'table';
+
+  const PRI_CLASS = { alta: 'pri-alta', media: 'pri-media', baixa: 'pri-baixa' };
+  const ST_CLASS  = {
+    'naoiniciado': 'ts-naoiniciado', 'espera': 'ts-espera',
+    'andamento': 'ts-andamento', 'iniciado': 'ts-iniciado',
+    'atrasado': 'ts-atrasado', 'concluido': 'ts-concluido'
+  };
+  const ST_LABEL  = {
+    'naoiniciado': 'Não iniciado', 'espera': 'Em espera',
+    'andamento': 'Em andamento', 'iniciado': 'Iniciado',
+    'atrasado': 'Atrasado', 'concluido': 'Concluído'
+  };
+
+  tbody.innerHTML = tarefas.map((t, idx) => `
+    <tr>
+      <td style="font-weight:500">${t.nome}</td>
+      <td style="color:var(--text-2);font-size:9.5px">${t.desc || '—'}</td>
+      <td style="font-size:9.5px">${t.responsavel || '—'}</td>
+      <td><span class="pri ${PRI_CLASS[t.prioridade] || 'pri-media'}">${t.prioridade || 'média'}</span></td>
+      <td style="font-size:9.5px;color:var(--text-2)">${formatDateBR(t.inicio) || '—'}</td>
+      <td style="font-size:9.5px;${t.status==='atrasado'?'color:var(--red)':''}">${formatDateBR(t.final) || '—'}</td>
+      <td>
+        <select class="task-select-sm" onchange="alterarStatusTarefa('${ativId}',${idx},this.value)"
+          style="font-size:9px">
+          <option value="naoiniciado" ${t.status==='naoiniciado'?'selected':''}>Não iniciado</option>
+          <option value="espera"      ${t.status==='espera'     ?'selected':''}>Em espera</option>
+          <option value="andamento"   ${t.status==='andamento'  ?'selected':''}>Em andamento</option>
+          <option value="iniciado"    ${t.status==='iniciado'   ?'selected':''}>Iniciado</option>
+          <option value="atrasado"    ${t.status==='atrasado'   ?'selected':''}>Atrasado</option>
+          <option value="concluido"   ${t.status==='concluido'  ?'selected':''}>Concluído</option>
+        </select>
+      </td>
+      <td>
+        <button onclick="removerTarefa('${ativId}',${idx})" title="Remover tarefa"
+          style="background:none;border:none;cursor:pointer;color:var(--text-3);font-size:14px;padding:0 4px"
+          onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-3)'">×</button>
+      </td>
+    </tr>`).join('');
+}
+
+function novaTarefa() {
+  if (!ativSelecionadaId) return;
+
+  const nome        = prompt('Nome da tarefa:');
+  if (!nome || !nome.trim()) return;
+
+  const desc        = prompt('Descrição (opcional):') || '';
+  const responsavel = prompt('Responsável (opcional):') || '';
+  const prioridade  = (prompt('Prioridade (alta / media / baixa):') || 'media').toLowerCase().replace('é','e');
+  const inicio      = prompt('Data de início (AAAA-MM-DD, opcional):') || '';
+  const final       = prompt('Data final (AAAA-MM-DD, opcional):') || '';
+
+  if (!TAREFAS[ativSelecionadaId]) TAREFAS[ativSelecionadaId] = [];
+
+  /* Verifica se já está atrasada na criação */
+  let status = 'naoiniciado';
+  if (final) {
+    const df = new Date(final); df.setHours(0,0,0,0);
+    const hj = new Date();      hj.setHours(0,0,0,0);
+    if (df < hj) status = 'atrasado';
+  }
+
+  TAREFAS[ativSelecionadaId].push({
+    id: 'T' + Date.now(),
+    nome: nome.trim(), desc, responsavel,
+    prioridade: ['alta','media','baixa'].includes(prioridade) ? prioridade : 'media',
+    inicio, final, status,
+    criadoEm: new Date().toISOString(),
+  });
+
+  salvarTarefas();
+  renderTarefas(ativSelecionadaId);
+  renderGantt();
+  showToast('Tarefa adicionada');
+}
+
+function removerTarefa(ativId, idx) {
+  if (!confirm('Remover esta tarefa?')) return;
+  TAREFAS[ativId].splice(idx, 1);
+  salvarTarefas();
+  renderTarefas(ativId);
+  renderGantt();
+  showToast('Tarefa removida');
+}
+
+function alterarStatusTarefa(ativId, idx, novoStatus) {
+  if (!TAREFAS[ativId] || !TAREFAS[ativId][idx]) return;
+  TAREFAS[ativId][idx].status = novoStatus;
+  salvarTarefas();
+  showToast('Status atualizado');
+}
+
+/* ── REMOVER ATIVIDADE ── */
+function removerAtividadeSelecionada() {
+  if (!ativSelecionadaId) return;
+  const ativ = ATIVIDADES.find(a => a.id === ativSelecionadaId);
+  if (!ativ) return;
+  if (!confirm('Remover a atividade "' + ativ.nome + '" e todas as suas tarefas?')) return;
+
+  const idx = ATIVIDADES.findIndex(a => a.id === ativSelecionadaId);
+  ATIVIDADES.splice(idx, 1);
+  delete TAREFAS[ativSelecionadaId];
+
+  salvarAtividades();
+  salvarTarefas();
+
+  ativSelecionadaId = null;
+  document.getElementById('task-overlay').classList.remove('open');
+  document.getElementById('btn-remover-ativ').style.display = 'none';
+  renderGantt();
+  showToast('Atividade removida');
+}
+
+/* ── NOVO PROJETO ── */
+function openModalNovoProjeto() {
+  document.getElementById('modal-novo-projeto').classList.add('open');
+}
+
+function criarNovoProjeto() {
+  closeModal('modal-novo-projeto');
+  /* Mantém dados existentes mas inicia onboarding para novo projeto */
+  showScreen('onboarding');
+}
+
+/* ── GANTT LEGADO (compatibilidade) ── */
+function switchView() {}
+function filterAtividades() { renderGantt(); }
+function renderAtividades() { renderGantt(); }
 
 /* ── RENDERIZAÇÃO DA TABELA DE ATIVIDADES ── */
 function renderAtividades() {
@@ -2277,12 +2809,10 @@ function openModalOcorrencia() {
 }
 
 function openModalAtividade() {
-  /* Limpa os campos antes de abrir */
   document.getElementById('ativ-nome').value = '';
   document.getElementById('ativ-fase').value = 'prod';
   document.getElementById('ativ-inicio').value = '';
   document.getElementById('ativ-termino').value = '';
-  document.getElementById('ativ-ocorrencias').value = '1';
   document.getElementById('ativ-pub-prev').value = '';
   document.getElementById('ativ-produto').value = '';
   document.getElementById('ativ-erro').style.display = 'none';
@@ -2339,7 +2869,6 @@ function saveAtividade() {
   const resp      = document.getElementById('select-responsavel').value;
   const inicio    = document.getElementById('ativ-inicio').value;
   const termino   = document.getElementById('ativ-termino').value;
-  const ocorPrev  = parseInt(document.getElementById('ativ-ocorrencias').value) || 1;
   const pubPrev   = parseInt(document.getElementById('ativ-pub-prev').value) || null;
   const produto   = document.getElementById('ativ-produto').value.trim();
   const erroEl    = document.getElementById('ativ-erro');
@@ -2378,7 +2907,6 @@ function saveAtividade() {
     inicio,
     termino,
     prazo,
-    ocorPrev,
     pubPrev:      pubPrev || null,
     pubAting:     null,
     execPct:      0,
@@ -2391,7 +2919,7 @@ function saveAtividade() {
   salvarAtividades();
 
   closeModal('modal-atividade');
-  renderAtividades();
+  renderGantt();
   showToast('Atividade "' + nome + '" adicionada com sucesso');
 }
 
@@ -2412,7 +2940,7 @@ function loadSampleData() {
 }
 
 /* ── INICIALIZAÇÃO ── */
-renderAtividades();
+renderGantt();
 
 /* ═══════════════════════════════════════════════
    SISTEMA DE ONBOARDING E LOGIN
