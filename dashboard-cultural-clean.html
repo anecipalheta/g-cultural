@@ -1,0 +1,2824 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestão Cultural — Dashboard</title>
+<style>
+
+/* ═══════════════════════════════════════════════
+   VARIÁVEIS DE TEMA — LIGHT E DARK MODE
+   Para mudar uma cor, altere o valor aqui.
+   ═══════════════════════════════════════════════ */
+:root {
+  /* Fundos */
+  --bg:          #f7f6f3;
+  --surface:     #ffffff;
+  --surface-2:   #f2f1ee;
+  --surface-3:   #eceae6;
+
+  /* Bordas */
+  --border:       #e4e2dd;
+  --border-med:   #ccc9c3;
+
+  /* Texto */
+  --text-1: #1a1917;
+  --text-2: #5c5a55;
+  --text-3: #9b9892;
+
+  /* Acento principal */
+  --blue:         #2563eb;
+  --blue-bg:      #eff4ff;
+  --blue-border:  #c7d7fd;
+  --blue-text:    #1e40af;
+
+  /* Semânticas */
+  --green:        #16a34a;
+  --green-bg:     #f0fdf4;
+  --green-border: #bbf7d0;
+  --green-text:   #14532d;
+
+  --amber:        #b45309;
+  --amber-bg:     #fffbeb;
+  --amber-border: #fde68a;
+  --amber-text:   #78350f;
+
+  --red:          #dc2626;
+  --red-bg:       #fef2f2;
+  --red-border:   #fecaca;
+  --red-text:     #7f1d1d;
+
+  --purple:       #7c3aed;
+  --purple-bg:    #f5f3ff;
+  --purple-border:#ddd6fe;
+  --purple-text:  #4c1d95;
+
+  /* Header/Nav (fixos nos dois modos) */
+  --hdr-bg:  #0d1b2a;
+  --nav-bg:  #152032;
+  --nav-border: rgba(255,255,255,.05);
+
+  /* Raios */
+  --r-sm: 6px;
+  --r:    10px;
+  --r-lg: 14px;
+
+  /* Sombra */
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+}
+
+/* ── DARK MODE ── */
+[data-theme="dark"] {
+  --bg:        #111110;
+  --surface:   #1c1c1a;
+  --surface-2: #242422;
+  --surface-3: #2a2926;
+
+  --border:    #2a2926;
+  --border-med:#3a3835;
+
+  --text-1: #f0efe9;
+  --text-2: #a8a69f;
+  --text-3: #6b6a65;
+
+  --blue:         #3b82f6;
+  --blue-bg:      #1a2035;
+  --blue-border:  #2a3f6f;
+  --blue-text:    #93c5fd;
+
+  --green:        #22c55e;
+  --green-bg:     #0d1f14;
+  --green-border: #1a4028;
+  --green-text:   #86efac;
+
+  --amber:        #f59e0b;
+  --amber-bg:     #1a1505;
+  --amber-border: #3d2f00;
+  --amber-text:   #fcd34d;
+
+  --red:          #ef4444;
+  --red-bg:       #1f1010;
+  --red-border:   #3d1515;
+  --red-text:     #fca5a5;
+
+  --purple:       #a78bfa;
+  --purple-bg:    #1a1530;
+  --purple-border:#3d2d70;
+  --purple-text:  #ddd6fe;
+}
+
+/* ═══════════════════════════════════════════════
+   RESET E BASE
+   ═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  min-height: 100vh;
+  transition: background .2s, color .2s;
+}
+
+/* ═══════════════════════════════════════════════
+   LAYOUT PRINCIPAL
+   ═══════════════════════════════════════════════ */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ═══════════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════════ */
+.header {
+  background: var(--hdr-bg);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  height: 50px;
+  gap: 0;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.hdr-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding-right: 20px;
+  border-right: 1px solid rgba(255,255,255,.08);
+}
+
+.hdr-logo {
+  width: 24px; height: 24px;
+  background: var(--blue);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.hdr-logo svg { display: block; }
+.hdr-name { color: #f1f0ee; font-size: 12.5px; font-weight: 600; letter-spacing: -.01em; }
+
+.hdr-proj {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  flex: 1;
+}
+
+.hdr-proj-label { color: rgba(255,255,255,.3); font-size: 10px; }
+
+#project-select {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 7px;
+  color: #e8e7e4;
+  font-size: 11.5px;
+  padding: 5px 10px;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+#project-select:focus { border-color: rgba(255,255,255,.25); }
+
+.hdr-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.hdr-pill {
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.hdr-status {
+  color: rgba(255,255,255,.4);
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.hdr-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #22c55e; }
+
+/* Botão light/dark */
+.theme-btn {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background .15s;
+  color: rgba(255,255,255,.6);
+}
+.theme-btn:hover { background: rgba(255,255,255,.12); }
+.theme-btn svg { display: block; }
+
+/* ═══════════════════════════════════════════════
+   NAVEGAÇÃO / ABAS
+   ═══════════════════════════════════════════════ */
+.nav {
+  background: var(--nav-bg);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--nav-border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: sticky;
+  top: 50px;
+  z-index: 99;
+}
+.nav::-webkit-scrollbar { display: none; }
+
+.nav-tab {
+  padding: 12px 14px;
+  font-size: 11px;
+  color: rgba(255,255,255,.35);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color .15s;
+  user-select: none;
+  letter-spacing: -.01em;
+}
+.nav-tab:hover { color: rgba(255,255,255,.6); }
+.nav-tab.active { color: #fff; border-bottom-color: #3b82f6; font-weight: 500; }
+
+.nav-chips {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  padding-left: 16px;
+  flex-shrink: 0;
+}
+
+.nav-chip {
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════
+   CONTEÚDO DAS ABAS
+   ═══════════════════════════════════════════════ */
+.tab-content { display: none; padding: 18px 20px; }
+.tab-content.active { display: block; }
+
+/* ═══════════════════════════════════════════════
+   COMPONENTES BASE — CARDS
+   ═══════════════════════════════════════════════ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  transition: background .2s, border-color .2s;
+}
+
+.card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-1);
+  letter-spacing: -.01em;
+}
+
+.card-sub {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+.card-hd {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-link {
+  font-size: 10px;
+  color: var(--blue);
+  cursor: pointer;
+  white-space: nowrap;
+  padding-left: 8px;
+}
+.card-link:hover { text-decoration: underline; }
+
+/* ═══════════════════════════════════════════════
+   COMPONENTES BASE — PILL / BADGE
+   ═══════════════════════════════════════════════ */
+.pill {
+  font-size: 9.5px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  display: inline-block;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.pill-green  { background: var(--green-bg);  color: var(--green-text);  border-color: var(--green-border); }
+.pill-blue   { background: var(--blue-bg);   color: var(--blue-text);   border-color: var(--blue-border); }
+.pill-amber  { background: var(--amber-bg);  color: var(--amber-text);  border-color: var(--amber-border); }
+.pill-red    { background: var(--red-bg);    color: var(--red-text);    border-color: var(--red-border); }
+.pill-purple { background: var(--purple-bg); color: var(--purple-text); border-color: var(--purple-border); }
+.pill-gray   { background: var(--surface-2); color: var(--text-2);      border-color: var(--border); }
+
+/* ═══════════════════════════════════════════════
+   COMPONENTES BASE — BARRA DE PROGRESSO
+   ═══════════════════════════════════════════════ */
+.bar-track { height: 3px; background: var(--surface-2); border-radius: 2px; }
+.bar-fill  { height: 3px; border-radius: 2px; transition: width .3s; }
+.bar-sm    { height: 2px; }
+.bar-md    { height: 5px; border-radius: 3px; }
+.bar-md .bar-fill { height: 5px; border-radius: 3px; }
+
+/* ═══════════════════════════════════════════════
+   COMPONENTES BASE — TABELA
+   ═══════════════════════════════════════════════ */
+.tbl { width: 100%; border-collapse: collapse; font-size: 10px; }
+.tbl th {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--text-3);
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+  background: var(--surface-2);
+}
+.tbl td {
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-1);
+  vertical-align: middle;
+}
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tbody tr:hover td { background: var(--surface-2); cursor: pointer; }
+
+/* ═══════════════════════════════════════════════
+   COMPONENTES BASE — BOTÕES
+   ═══════════════════════════════════════════════ */
+.btn {
+  font-size: 10.5px;
+  padding: 6px 14px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border-med);
+  background: var(--surface);
+  color: var(--text-2);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s, border-color .15s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--surface-2); border-color: var(--border-med); }
+
+.btn-primary {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+}
+.btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+
+/* ═══════════════════════════════════════════════
+   COMPONENTES BASE — FORMULÁRIO
+   ═══════════════════════════════════════════════ */
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  font-size: 11px;
+  padding: 7px 10px;
+  border: 1px solid var(--border-med);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text-1);
+  font-family: inherit;
+  outline: none;
+  transition: border-color .15s;
+}
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus { border-color: var(--blue); }
+.form-label {
+  font-size: 10px;
+  color: var(--text-3);
+  display: block;
+  margin-bottom: 4px;
+}
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+
+/* ═══════════════════════════════════════════════
+   TELA DE ONBOARDING E LOGIN
+   ═══════════════════════════════════════════════ */
+.screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: var(--bg);
+  overflow-y: auto;
+}
+.screen.active { display: flex; flex-direction: column; }
+
+/* Topo da tela de onboarding/login */
+.screen-hdr {
+  background: var(--hdr-bg);
+  padding: 0 32px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.screen-hdr-logo {
+  width: 26px; height: 26px;
+  background: var(--blue);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+}
+.screen-hdr-name { color: #f1f0ee; font-size: 13px; font-weight: 600; }
+
+/* Corpo centralizado */
+.screen-body {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 20px 64px;
+}
+
+/* Cartão principal */
+.screen-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  width: 100%;
+  overflow: hidden;
+}
+.screen-card-sm { max-width: 440px; }
+.screen-card-md { max-width: 640px; }
+.screen-card-lg { max-width: 780px; }
+
+/* Cabeçalho do cartão */
+.sc-hd {
+  padding: 28px 32px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.sc-step {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--blue);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sc-step-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+.sc-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -.02em;
+  margin-bottom: 6px;
+}
+.sc-sub {
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.6;
+}
+
+/* Corpo do cartão */
+.sc-body { padding: 28px 32px; display: flex; flex-direction: column; gap: 20px; }
+
+/* Grupos de campos */
+.sc-section-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-3);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Input maior para onboarding */
+.sc-input, .sc-select, .sc-textarea {
+  width: 100%;
+  font-size: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-med);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-1);
+  font-family: inherit;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.sc-input:focus, .sc-select:focus, .sc-textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+}
+.sc-input.error { border-color: var(--red); }
+.sc-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-2);
+  display: block;
+  margin-bottom: 5px;
+}
+.sc-hint {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 4px;
+}
+.sc-error {
+  font-size: 10px;
+  color: var(--red);
+  margin-top: 4px;
+  display: none;
+}
+
+/* Barra de progresso do onboarding */
+.sc-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--border);
+}
+.sc-prog-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+.sc-prog-step:last-child { flex: 0; }
+.sc-prog-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all .2s;
+}
+.sc-prog-num.done  { background: var(--green);  color: #fff; }
+.sc-prog-num.active{ background: var(--blue);   color: #fff; }
+.sc-prog-num.idle  { background: var(--surface-2); color: var(--text-3); border: 1px solid var(--border); }
+.sc-prog-label {
+  font-size: 10px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.sc-prog-label.active { color: var(--blue); font-weight: 600; }
+.sc-prog-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  margin: 0 4px;
+  min-width: 20px;
+}
+.sc-prog-line.done { background: var(--green); }
+
+/* Rodapé do cartão */
+.sc-footer {
+  padding: 20px 32px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-2);
+}
+
+/* Botões grandes */
+.btn-lg {
+  font-size: 12px;
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: 1px solid var(--border-med);
+  background: var(--surface);
+  color: var(--text-2);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  transition: background .15s;
+}
+.btn-lg:hover { background: var(--surface-2); }
+.btn-lg-primary {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+}
+.btn-lg-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+.btn-lg-primary:disabled {
+  background: var(--surface-3);
+  color: var(--text-3);
+  border-color: var(--border);
+  cursor: not-allowed;
+}
+
+/* Tags de área cultural */
+.area-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.area-btn {
+  padding: 10px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  text-align: center;
+  transition: all .15s;
+  font-family: inherit;
+}
+.area-btn:hover { border-color: var(--blue); background: var(--blue-bg); }
+.area-btn.selected {
+  border-color: var(--blue);
+  background: var(--blue-bg);
+  box-shadow: 0 0 0 2px rgba(37,99,235,.2);
+}
+.area-btn-icon { font-size: 20px; margin-bottom: 4px; }
+.area-btn-label { font-size: 10px; font-weight: 500; color: var(--text-2); }
+.area-btn.selected .area-btn-label { color: var(--blue-text); }
+
+/* Indicador de força de senha */
+.pwd-strength { display: flex; gap: 4px; margin-top: 6px; }
+.pwd-bar { flex: 1; height: 3px; border-radius: 2px; background: var(--surface-3); transition: background .2s; }
+.pwd-label { font-size: 10px; color: var(--text-3); margin-top: 4px; }
+
+/* Tag de campo obrigatório */
+.required::after { content: ' *'; color: var(--red); }
+
+/* Avatar do gestor */
+.avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.avatar-circle {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--blue-bg);
+  border: 2px solid var(--blue-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--blue-text);
+  flex-shrink: 0;
+  letter-spacing: -.01em;
+}
+.avatar-info { flex: 1; }
+.avatar-name { font-size: 13px; font-weight: 600; color: var(--text-1); }
+.avatar-role { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+
+/* ═══════════════════════════════════════════════
+   GRID UTILITÁRIOS
+   ═══════════════════════════════════════════════ */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+.grid-5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; }
+.col    { display: flex; flex-direction: column; gap: 12px; }
+.main-grid { display: grid; grid-template-columns: 1fr 300px; gap: 12px; }
+
+/* ═══════════════════════════════════════════════
+   ABA: VISÃO GERAL — KPI CARDS
+   ═══════════════════════════════════════════════ */
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 16px 14px 20px;
+  position: relative;
+  box-shadow: var(--shadow);
+  transition: background .2s, border-color .2s;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 12px; bottom: 12px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+}
+.kpi-card.green::before  { background: var(--green); }
+.kpi-card.blue::before   { background: var(--blue); }
+.kpi-card.amber::before  { background: var(--amber); }
+.kpi-card.red::before    { background: var(--red); }
+.kpi-card.purple::before { background: var(--purple); }
+
+.kpi-label { font-size: 10px; color: var(--text-3); margin-bottom: 6px; }
+.kpi-value { font-size: 26px; font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+.kpi-unit  { font-size: 14px; font-weight: 400; color: var(--text-3); margin-left: 2px; }
+.kpi-bar   { height: 3px; background: var(--surface-2); border-radius: 2px; margin: 8px 0 5px; }
+.kpi-foot  { display: flex; justify-content: space-between; align-items: center; }
+.kpi-sub   { font-size: 10px; color: var(--text-3); }
+.kpi-delta { font-size: 10px; font-weight: 600; }
+
+/* ═══════════════════════════════════════════════
+   ABA: VISÃO GERAL — SAÚDE DO PROJETO
+   ═══════════════════════════════════════════════ */
+.health-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.health-item:last-child { border-bottom: none; }
+
+.health-icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.health-body { flex: 1; }
+.health-label { font-size: 10px; color: var(--text-2); }
+.health-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -.01em;
+  line-height: 1.2;
+}
+.health-value span { font-size: 11px; font-weight: 400; color: var(--text-3); }
+
+/* ═══════════════════════════════════════════════
+   ABA: VISÃO GERAL — ALERTAS
+   ═══════════════════════════════════════════════ */
+.alert-item {
+  display: flex;
+  gap: 9px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.alert-item:last-child { margin-bottom: 0; }
+.alert-item:hover { opacity: .88; }
+.alert-item.danger { background: var(--red-bg);   border-color: var(--red-border); }
+.alert-item.warn   { background: var(--amber-bg); border-color: var(--amber-border); }
+.alert-item.info   { background: var(--blue-bg);  border-color: var(--blue-border); }
+
+.alert-icon {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+}
+.alert-icon.danger { background: var(--red-border); }
+.alert-icon.warn   { background: var(--amber-border); }
+.alert-icon.info   { background: var(--blue-border); }
+
+.alert-title { font-size: 10.5px; font-weight: 600; color: var(--text-1); }
+.alert-desc  { font-size: 9.5px; color: var(--text-2); margin-top: 2px; }
+.alert-tag   {
+  font-size: 9px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-top: 4px;
+  border: 1px solid;
+}
+.alert-tag.danger { background: var(--red-bg);   color: var(--red-text);   border-color: var(--red-border); }
+.alert-tag.warn   { background: var(--amber-bg); color: var(--amber-text); border-color: var(--amber-border); }
+
+/* ═══════════════════════════════════════════════
+   ABA: VISÃO GERAL — DOCUMENTAÇÃO RESUMO
+   ═══════════════════════════════════════════════ */
+.doc-summary-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+}
+.doc-summary-row:last-child { border-bottom: none; }
+.doc-summary-name { font-size: 10px; color: var(--text-1); flex: 1; }
+.doc-summary-bar  { flex: 1; }
+.doc-summary-val  { font-size: 10px; font-weight: 600; white-space: nowrap; text-align: right; min-width: 80px; }
+
+/* ═══════════════════════════════════════════════
+   ABA: VISÃO GERAL — INFO BOX
+   ═══════════════════════════════════════════════ */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.info-box  { background: var(--surface-2); border-radius: 8px; padding: 9px 11px; }
+.info-label { font-size: 9.5px; color: var(--text-3); margin-bottom: 2px; }
+.info-value { font-size: 11px; font-weight: 600; color: var(--text-1); }
+.info-money {
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 7px;
+}
+.info-divider { width: 1px; height: 28px; background: var(--border); }
+
+/* ═══════════════════════════════════════════════
+   ABA: EXECUÇÃO — GANTT
+   ═══════════════════════════════════════════════ */
+.gantt-phase {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--text-3);
+  padding: 8px 0 4px;
+}
+.gantt-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 50px;
+  align-items: center;
+  margin-bottom: 4px;
+  gap: 0;
+}
+.gantt-name {
+  font-size: 10px;
+  color: var(--text-2);
+  text-align: right;
+  padding-right: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gantt-track {
+  position: relative;
+  height: 18px;
+  background: var(--surface-2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.gantt-bar {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+  font-size: 9px;
+  color: rgba(255,255,255,.9);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.gantt-today {
+  position: absolute;
+  top: -2px; bottom: -2px;
+  width: 2px;
+  background: #ef4444;
+  z-index: 2;
+  left: 22%;
+}
+.gantt-date {
+  font-size: 9.5px;
+  color: var(--text-3);
+  text-align: right;
+  padding-left: 6px;
+}
+.gantt-legend {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.gantt-leg-item { display: flex; align-items: center; gap: 4px; font-size: 9.5px; color: var(--text-3); }
+.gantt-leg-sq   { width: 9px; height: 9px; border-radius: 2px; }
+
+/* ═══════════════════════════════════════════════
+   ABA: EXECUÇÃO — TOOLBAR
+   ═══════════════════════════════════════════════ */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.toolbar-sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+.toolbar-right { margin-left: auto; display: flex; gap: 6px; }
+
+.form-select-sm {
+  font-size: 10.5px;
+  padding: 5px 9px;
+  border: 1px solid var(--border-med);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text-1);
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+}
+.form-select-sm:focus { border-color: var(--blue); }
+
+/* ═══════════════════════════════════════════════
+   ABA: EXECUÇÃO — TABELA DE ATIVIDADES
+   ═══════════════════════════════════════════════ */
+.ativ-ind {
+  display: inline-flex;
+  width: 18px; height: 18px;
+  border-radius: 4px;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+.mini-bar { height: 3px; background: var(--surface-2); border-radius: 2px; margin-top: 3px; }
+.mini-fill { height: 3px; border-radius: 2px; }
+
+/* ═══════════════════════════════════════════════
+   MODAL — SOBREPOSIÇÃO
+   ═══════════════════════════════════════════════ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 200;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px;
+  overflow-y: auto;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border-med);
+  border-radius: var(--r-lg);
+  width: 100%;
+  max-width: 600px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  position: relative;
+}
+
+.modal-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title { font-size: 12.5px; font-weight: 600; color: var(--text-1); letter-spacing: -.01em; }
+.modal-sub   { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+.modal-close {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1;
+}
+.modal-close:hover { background: var(--surface-3); }
+
+.modal-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.section-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--text-3);
+  margin-bottom: 8px;
+}
+
+/* ═══════════════════════════════════════════════
+   TOAST — NOTIFICAÇÃO
+   ═══════════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--text-1);
+  color: var(--surface);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .2s, transform .2s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ═══════════════════════════════════════════════
+   PLACEHOLDER PARA ABAS NÃO IMPLEMENTADAS
+   ═══════════════════════════════════════════════ */
+.tab-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  color: var(--text-3);
+  text-align: center;
+  gap: 12px;
+}
+.tab-placeholder-icon { font-size: 36px; opacity: .4; }
+.tab-placeholder-title { font-size: 14px; font-weight: 600; color: var(--text-2); }
+.tab-placeholder-sub   { font-size: 11px; color: var(--text-3); max-width: 320px; line-height: 1.6; }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     TELA DE LOGIN
+     ═══════════════════════════════════════════ -->
+<div class="screen" id="screen-login">
+  <div class="screen-hdr">
+    <div class="screen-hdr-logo">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.5" fill="white" opacity=".9"/>
+        <rect x="8"   y="1.5" width="4.5" height="4.5" rx="1.5" fill="white" opacity=".5"/>
+        <rect x="1.5" y="8"   width="4.5" height="4.5" rx="1.5" fill="white" opacity=".5"/>
+        <rect x="8"   y="8"   width="4.5" height="4.5" rx="1.5" fill="white" opacity=".9"/>
+      </svg>
+    </div>
+    <span class="screen-hdr-name">Gestão Cultural</span>
+    <div style="margin-left:auto">
+      <button class="theme-btn" onclick="toggleTheme()" title="Alternar modo claro/escuro">
+        <svg id="login-icon-sun" width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:none">
+          <circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.6 2.6l1.1 1.1M10.3 10.3l1.1 1.1M10.3 3.7l-1.1 1.1M3.7 10.3l-1.1 1.1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <svg id="login-icon-moon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M12 8.5A5.5 5.5 0 015.5 2a5.5 5.5 0 100 10A5.5 5.5 0 0012 8.5z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div class="screen-body">
+    <div class="screen-card screen-card-sm">
+      <div class="sc-hd" style="text-align:center;padding:32px 32px 24px">
+        <div style="width:52px;height:52px;background:var(--blue);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+            <rect x="2.5" y="2.5" width="9" height="9" rx="3" fill="white" opacity=".9"/>
+            <rect x="14.5" y="2.5" width="9" height="9" rx="3" fill="white" opacity=".5"/>
+            <rect x="2.5" y="14.5" width="9" height="9" rx="3" fill="white" opacity=".5"/>
+            <rect x="14.5" y="14.5" width="9" height="9" rx="3" fill="white" opacity=".9"/>
+          </svg>
+        </div>
+        <div class="sc-title">Bem-vinda de volta</div>
+        <div class="sc-sub" id="login-project-name">Faça login para acessar o dashboard</div>
+      </div>
+      <div class="sc-body">
+        <div class="form-group">
+          <label class="sc-label required">E-mail</label>
+          <input class="sc-input" type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
+          <div class="sc-error" id="err-login-email">E-mail inválido</div>
+        </div>
+        <div class="form-group">
+          <label class="sc-label required" style="display:flex;justify-content:space-between">
+            <span>Senha</span>
+            <span style="font-weight:400;color:var(--blue);cursor:pointer;font-size:10px" onclick="forgotPassword()">Esqueci a senha</span>
+          </label>
+          <div style="position:relative">
+            <input class="sc-input" type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+            <button onclick="togglePwd('login-senha')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-3);padding:2px">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/></svg>
+            </button>
+          </div>
+          <div class="sc-error" id="err-login-senha">E-mail ou senha incorretos</div>
+        </div>
+      </div>
+      <div class="sc-footer" style="flex-direction:column;gap:10px;align-items:stretch">
+        <button class="btn-lg btn-lg-primary" onclick="doLogin()" style="width:100%;justify-content:center">
+          Entrar no dashboard
+        </button>
+        <div style="text-align:center;font-size:10px;color:var(--text-3)">
+          Primeiro acesso?
+          <span style="color:var(--blue);cursor:pointer" onclick="goToOnboarding()">Configurar novo projeto →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TELA DE ONBOARDING — CONFIGURAÇÃO INICIAL
+     ═══════════════════════════════════════════ -->
+<div class="screen" id="screen-onboarding">
+  <div class="screen-hdr">
+    <div class="screen-hdr-logo">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.5" fill="white" opacity=".9"/>
+        <rect x="8"   y="1.5" width="4.5" height="4.5" rx="1.5" fill="white" opacity=".5"/>
+        <rect x="1.5" y="8"   width="4.5" height="4.5" rx="1.5" fill="white" opacity=".5"/>
+        <rect x="8"   y="8"   width="4.5" height="4.5" rx="1.5" fill="white" opacity=".9"/>
+      </svg>
+    </div>
+    <span class="screen-hdr-name">Gestão Cultural</span>
+    <span style="font-size:11px;color:rgba(255,255,255,.3);margin-left:4px">— Configuração inicial</span>
+    <div style="margin-left:auto">
+      <button class="theme-btn" onclick="toggleTheme()" title="Alternar modo claro/escuro" style="border-color:rgba(255,255,255,.1)">
+        <svg id="ob-icon-sun" width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:none">
+          <circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.6 2.6l1.1 1.1M10.3 10.3l1.1 1.1M10.3 3.7l-1.1 1.1M3.7 10.3l-1.1 1.1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <svg id="ob-icon-moon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M12 8.5A5.5 5.5 0 015.5 2a5.5 5.5 0 100 10A5.5 5.5 0 0012 8.5z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="screen-body">
+    <div class="screen-card screen-card-lg">
+
+      <!-- Barra de progresso das etapas -->
+      <div class="sc-progress">
+        <div class="sc-prog-step">
+          <div class="sc-prog-num active" id="prog-1">1</div>
+          <span class="sc-prog-label active" id="prog-lbl-1">Projeto</span>
+        </div>
+        <div class="sc-prog-line" id="prog-line-1"></div>
+        <div class="sc-prog-step">
+          <div class="sc-prog-num idle" id="prog-2">2</div>
+          <span class="sc-prog-label" id="prog-lbl-2">Área e fonte</span>
+        </div>
+        <div class="sc-prog-line" id="prog-line-2"></div>
+        <div class="sc-prog-step">
+          <div class="sc-prog-num idle" id="prog-3">3</div>
+          <span class="sc-prog-label" id="prog-lbl-3">Responsável</span>
+        </div>
+        <div class="sc-prog-line" id="prog-line-3"></div>
+        <div class="sc-prog-step">
+          <div class="sc-prog-num idle" id="prog-4">4</div>
+          <span class="sc-prog-label" id="prog-lbl-4">Acesso</span>
+        </div>
+        <div class="sc-prog-line" id="prog-line-4"></div>
+        <div class="sc-prog-step" style="flex:0">
+          <div class="sc-prog-num idle" id="prog-5">5</div>
+          <span class="sc-prog-label" id="prog-lbl-5">Revisão</span>
+        </div>
+      </div>
+
+      <!-- ETAPA 1 — Dados do projeto -->
+      <div id="ob-step-1">
+        <div class="sc-hd">
+          <div class="sc-step"><div class="sc-step-dot"></div>Etapa 1 de 5</div>
+          <div class="sc-title">Dados do projeto</div>
+          <div class="sc-sub">Informe as informações básicas que identificam este projeto no dashboard.</div>
+        </div>
+        <div class="sc-body">
+          <div class="form-group">
+            <label class="sc-label required">Nome do projeto</label>
+            <input class="sc-input" type="text" id="ob-nome" placeholder="Ex: Palavras em Movimento" maxlength="80"
+              oninput="updateAvatarPreview()">
+            <div class="sc-hint">Aparecerá no header e em todos os documentos gerados pelo dashboard.</div>
+            <div class="sc-error" id="err-ob-nome">Nome do projeto é obrigatório</div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="sc-label required">Data de início</label>
+              <input class="sc-input" type="date" id="ob-inicio">
+              <div class="sc-error" id="err-ob-inicio">Data de início é obrigatória</div>
+            </div>
+            <div class="form-group">
+              <label class="sc-label required">Data de término</label>
+              <input class="sc-input" type="date" id="ob-termino">
+              <div class="sc-error" id="err-ob-termino">Data de término deve ser posterior ao início</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="sc-label">Edital / chamamento público</label>
+            <input class="sc-input" type="text" id="ob-edital" placeholder="Ex: Chamamento Público nº 06/2024">
+            <div class="sc-hint">Número e nome do edital que originou este projeto.</div>
+          </div>
+          <div class="form-group">
+            <label class="sc-label">Valor aprovado (R$)</label>
+            <input class="sc-input" type="text" id="ob-valor" placeholder="Ex: 100.000,00"
+              oninput="formatMoney(this)">
+          </div>
+        </div>
+        <div class="sc-footer">
+          <div style="font-size:10px;color:var(--text-3)">Campos marcados com * são obrigatórios</div>
+          <button class="btn-lg btn-lg-primary" onclick="obNext(1)">Próximo →</button>
+        </div>
+      </div>
+
+      <!-- ETAPA 2 — Área cultural e fonte de recurso -->
+      <div id="ob-step-2" style="display:none">
+        <div class="sc-hd">
+          <div class="sc-step"><div class="sc-step-dot"></div>Etapa 2 de 5</div>
+          <div class="sc-title">Área cultural e fonte de recurso</div>
+          <div class="sc-sub">Essas informações aparecem no header do dashboard e orientam os critérios de análise.</div>
+        </div>
+        <div class="sc-body">
+          <div>
+            <div class="sc-section-label">Área cultural principal</div>
+            <div class="area-grid" id="area-grid">
+              <button class="area-btn" data-area="Literatura"      onclick="selectArea(this)"><div class="area-btn-icon">📚</div><div class="area-btn-label">Literatura</div></button>
+              <button class="area-btn" data-area="Audiovisual"     onclick="selectArea(this)"><div class="area-btn-icon">🎬</div><div class="area-btn-label">Audiovisual</div></button>
+              <button class="area-btn" data-area="Música"          onclick="selectArea(this)"><div class="area-btn-icon">🎵</div><div class="area-btn-label">Música</div></button>
+              <button class="area-btn" data-area="Artes Cênicas"   onclick="selectArea(this)"><div class="area-btn-icon">🎭</div><div class="area-btn-label">Artes Cênicas</div></button>
+              <button class="area-btn" data-area="Artes Visuais"   onclick="selectArea(this)"><div class="area-btn-icon">🎨</div><div class="area-btn-label">Artes Visuais</div></button>
+              <button class="area-btn" data-area="Patrimônio"      onclick="selectArea(this)"><div class="area-btn-icon">🏛️</div><div class="area-btn-label">Patrimônio</div></button>
+              <button class="area-btn" data-area="Cultura Popular" onclick="selectArea(this)"><div class="area-btn-icon">🥁</div><div class="area-btn-label">Cultura Popular</div></button>
+              <button class="area-btn" data-area="Outra"           onclick="selectArea(this)"><div class="area-btn-icon">✦</div><div class="area-btn-label">Outra</div></button>
+            </div>
+            <div id="area-outra-wrap" style="display:none;margin-top:8px">
+              <input class="sc-input" type="text" id="ob-area-outra" placeholder="Informe a área cultural">
+            </div>
+            <div class="sc-error" id="err-ob-area">Selecione ou informe a área cultural</div>
+          </div>
+          <div>
+            <div class="sc-section-label">Fonte de recurso</div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="sc-label required">Política / lei de incentivo</label>
+                <select class="sc-select" id="ob-fonte">
+                  <option value="">Selecione…</option>
+                  <option>PNAB — Política Nacional Aldir Blanc</option>
+                  <option>Lei Paulo Gustavo</option>
+                  <option>Lei Rouanet</option>
+                  <option>Lei do Audiovisual</option>
+                  <option>Fundo Municipal de Cultura</option>
+                  <option>Fundo Estadual de Cultura</option>
+                  <option>Edital direto do MinC</option>
+                  <option>Outro</option>
+                </select>
+                <div class="sc-error" id="err-ob-fonte">Selecione a fonte de recurso</div>
+              </div>
+              <div class="form-group">
+                <label class="sc-label">Esfera do edital</label>
+                <select class="sc-select" id="ob-esfera">
+                  <option value="">Selecione…</option>
+                  <option>Federal</option>
+                  <option>Estadual</option>
+                  <option>Municipal</option>
+                  <option>Privado / patrocínio</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="sc-label">Órgão financiador</label>
+            <input class="sc-input" type="text" id="ob-orgao" placeholder="Ex: Secretaria Municipal de Cultura de Aurora do Norte">
+            <div class="sc-hint">Nome completo da secretaria, fundação ou órgão que gerencia o edital.</div>
+          </div>
+        </div>
+        <div class="sc-footer">
+          <button class="btn-lg" onclick="obBack(2)">← Voltar</button>
+          <button class="btn-lg btn-lg-primary" onclick="obNext(2)">Próximo →</button>
+        </div>
+      </div>
+
+      <!-- ETAPA 3 — Responsável pelo projeto -->
+      <div id="ob-step-3" style="display:none">
+        <div class="sc-hd">
+          <div class="sc-step"><div class="sc-step-dot"></div>Etapa 3 de 5</div>
+          <div class="sc-title">Responsável pelo projeto</div>
+          <div class="sc-sub">Dados do/a gestor/a principal. Estas informações aparecem na aba Informações e são usadas para identificação no sistema.</div>
+        </div>
+        <div class="sc-body">
+          <div class="avatar-row" id="avatar-preview">
+            <div class="avatar-circle" id="avatar-iniciais">—</div>
+            <div class="avatar-info">
+              <div class="avatar-name" id="avatar-nome-preview">Seu nome aparecerá aqui</div>
+              <div class="avatar-role" id="avatar-cargo-preview">Gestora do projeto</div>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="sc-label required">Nome completo</label>
+              <input class="sc-input" type="text" id="ob-resp-nome" placeholder="Ex: Maria da Silva"
+                oninput="updateAvatarPreview()">
+              <div class="sc-error" id="err-ob-resp-nome">Nome é obrigatório</div>
+            </div>
+            <div class="form-group">
+              <label class="sc-label">Cargo / função no projeto</label>
+              <input class="sc-input" type="text" id="ob-resp-cargo" placeholder="Ex: Coordenadora geral"
+                oninput="updateAvatarPreview()">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="sc-label">Telefone / WhatsApp</label>
+              <input class="sc-input" type="tel" id="ob-resp-tel" placeholder="Ex: (11) 9 9999-9999">
+            </div>
+            <div class="form-group">
+              <label class="sc-label">Organização / coletivo</label>
+              <input class="sc-input" type="text" id="ob-resp-org" placeholder="Ex: Associação Cultural Palavras">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="sc-label">Tipo de proponente</label>
+            <select class="sc-select" id="ob-resp-tipo">
+              <option value="">Selecione…</option>
+              <option>Pessoa física — CPF</option>
+              <option>Pessoa jurídica — CNPJ</option>
+              <option>MEI — Microempreendedor Individual</option>
+              <option>Coletivo cultural (representado por pessoa física)</option>
+              <option>Associação / ONG sem fins lucrativos</option>
+            </select>
+          </div>
+        </div>
+        <div class="sc-footer">
+          <button class="btn-lg" onclick="obBack(3)">← Voltar</button>
+          <button class="btn-lg btn-lg-primary" onclick="obNext(3)">Próximo →</button>
+        </div>
+      </div>
+
+      <!-- ETAPA 4 — Credenciais de acesso -->
+      <div id="ob-step-4" style="display:none">
+        <div class="sc-hd">
+          <div class="sc-step"><div class="sc-step-dot"></div>Etapa 4 de 5</div>
+          <div class="sc-title">Credenciais de acesso</div>
+          <div class="sc-sub">Crie o login e senha que serão usados para acessar este dashboard. Guarde em local seguro.</div>
+        </div>
+        <div class="sc-body">
+          <div class="form-group">
+            <label class="sc-label required">E-mail de acesso</label>
+            <input class="sc-input" type="email" id="ob-email" placeholder="seu@email.com"
+              oninput="clearErr('err-ob-email')">
+            <div class="sc-hint">Este e-mail será seu login. Use um e-mail que você acessa com frequência.</div>
+            <div class="sc-error" id="err-ob-email">Informe um e-mail válido</div>
+          </div>
+          <div class="form-group">
+            <label class="sc-label required">Senha</label>
+            <div style="position:relative">
+              <input class="sc-input" type="password" id="ob-senha" placeholder="Mínimo 8 caracteres"
+                oninput="checkPwdStrength()" autocomplete="new-password">
+              <button onclick="togglePwd('ob-senha')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-3);padding:2px">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/></svg>
+              </button>
+            </div>
+            <div class="pwd-strength" id="pwd-bars">
+              <div class="pwd-bar" id="pb1"></div>
+              <div class="pwd-bar" id="pb2"></div>
+              <div class="pwd-bar" id="pb3"></div>
+              <div class="pwd-bar" id="pb4"></div>
+            </div>
+            <div class="pwd-label" id="pwd-label">Use pelo menos 8 caracteres com letras e números</div>
+            <div class="sc-error" id="err-ob-senha">Senha deve ter pelo menos 8 caracteres</div>
+          </div>
+          <div class="form-group">
+            <label class="sc-label required">Confirmar senha</label>
+            <div style="position:relative">
+              <input class="sc-input" type="password" id="ob-senha2" placeholder="Repita a senha"
+                oninput="clearErr('err-ob-senha2')" autocomplete="new-password">
+              <button onclick="togglePwd('ob-senha2')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-3);padding:2px">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/></svg>
+              </button>
+            </div>
+            <div class="sc-error" id="err-ob-senha2">As senhas não coincidem</div>
+          </div>
+          <div style="background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:8px;padding:12px 14px;display:flex;gap:10px">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px"><path d="M8 2l6 11H2L8 2z" stroke="var(--amber)" stroke-width="1.2" stroke-linejoin="round" fill="none"/><path d="M8 7v3M8 11.5h.01" stroke="var(--amber)" stroke-width="1.2" stroke-linecap="round"/></svg>
+            <div style="font-size:10.5px;color:var(--amber-text);line-height:1.5">
+              Nesta versão os dados são salvos localmente no seu navegador. Não compartilhe o arquivo com pessoas não autorizadas. Para uso em equipe com segurança, a migração para servidor online está prevista.
+            </div>
+          </div>
+        </div>
+        <div class="sc-footer">
+          <button class="btn-lg" onclick="obBack(4)">← Voltar</button>
+          <button class="btn-lg btn-lg-primary" onclick="obNext(4)">Próximo →</button>
+        </div>
+      </div>
+
+      <!-- ETAPA 5 — Revisão e confirmação -->
+      <div id="ob-step-5" style="display:none">
+        <div class="sc-hd">
+          <div class="sc-step"><div class="sc-step-dot"></div>Etapa 5 de 5</div>
+          <div class="sc-title">Tudo certo! Revise antes de salvar</div>
+          <div class="sc-sub">Confira as informações abaixo. Você poderá alterar qualquer dado depois nas configurações do dashboard.</div>
+        </div>
+        <div class="sc-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <div class="sc-section-label">Projeto</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div class="info-box"><div class="info-label">Nome</div><div class="info-value" id="rev-nome">—</div></div>
+                <div class="info-box"><div class="info-label">Início</div><div class="info-value" id="rev-inicio">—</div></div>
+                <div class="info-box"><div class="info-label">Término</div><div class="info-value" id="rev-termino">—</div></div>
+                <div class="info-box"><div class="info-label">Valor aprovado</div><div class="info-value" id="rev-valor">—</div></div>
+                <div class="info-box"><div class="info-label">Edital</div><div class="info-value" id="rev-edital" style="font-size:10px">—</div></div>
+              </div>
+            </div>
+            <div>
+              <div class="sc-section-label">Área e acesso</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div class="info-box"><div class="info-label">Área cultural</div><div class="info-value" id="rev-area">—</div></div>
+                <div class="info-box"><div class="info-label">Fonte de recurso</div><div class="info-value" id="rev-fonte" style="font-size:10px">—</div></div>
+                <div class="info-box"><div class="info-label">Órgão financiador</div><div class="info-value" id="rev-orgao" style="font-size:10px">—</div></div>
+                <div class="info-box"><div class="info-label">Responsável</div><div class="info-value" id="rev-resp">—</div></div>
+                <div class="info-box"><div class="info-label">Login (e-mail)</div><div class="info-value" id="rev-email">—</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sc-footer">
+          <button class="btn-lg" onclick="obBack(5)">← Voltar e editar</button>
+          <button class="btn-lg btn-lg-primary" onclick="finishOnboarding()" id="btn-finish">
+            Criar dashboard →
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     ESTRUTURA PRINCIPAL
+     ═══════════════════════════════════════════ -->
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="hdr-brand">
+      <div class="hdr-logo">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <rect x="1.5" y="1.5" width="4.5" height="4.5" rx="1.5" fill="white" opacity=".9"/>
+          <rect x="8"   y="1.5" width="4.5" height="4.5" rx="1.5" fill="white" opacity=".5"/>
+          <rect x="1.5" y="8"   width="4.5" height="4.5" rx="1.5" fill="white" opacity=".5"/>
+          <rect x="8"   y="8"   width="4.5" height="4.5" rx="1.5" fill="white" opacity=".9"/>
+        </svg>
+      </div>
+      <span class="hdr-name">Gestão Cultural</span>
+    </div>
+
+    <div class="hdr-proj">
+      <span class="hdr-proj-label">Projeto</span>
+      <select id="project-select" onchange="switchProject(this.value)">
+        <option value="p1">Novo projeto</option>
+      </select>
+    </div>
+
+    <div class="hdr-right">
+      <span class="hdr-pill" id="hdr-area" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.4)">—</span>
+      <span class="hdr-pill" id="hdr-fonte" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.4)">—</span>
+      <div class="hdr-status">
+        <div class="hdr-status-dot" id="hdr-status-dot" style="background:#9b9892"></div>
+        <span id="hdr-status-txt">Aguardando configuração</span>
+      </div>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Alternar modo claro/escuro">
+        <svg id="icon-sun" width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:none">
+          <circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.6 2.6l1.1 1.1M10.3 10.3l1.1 1.1M10.3 3.7l-1.1 1.1M3.7 10.3l-1.1 1.1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <svg id="icon-moon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M12 8.5A5.5 5.5 0 015.5 2a5.5 5.5 0 100 10A5.5 5.5 0 0012 8.5z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- NAVEGAÇÃO -->
+  <nav class="nav">
+    <div class="nav-tab active" data-tab="visao-geral"   onclick="switchTab('visao-geral')">Visão geral</div>
+    <div class="nav-tab"        data-tab="planejamento"  onclick="switchTab('planejamento')">Planejamento</div>
+    <div class="nav-tab"        data-tab="execucao"      onclick="switchTab('execucao')">Execução</div>
+    <div class="nav-tab"        data-tab="financeiro"    onclick="switchTab('financeiro')">Financeiro</div>
+    <div class="nav-tab"        data-tab="pessoas"       onclick="switchTab('pessoas')">Pessoas</div>
+    <div class="nav-tab"        data-tab="comunicacao"   onclick="switchTab('comunicacao')">Comunicação</div>
+    <div class="nav-tab"        data-tab="documentacao"  onclick="switchTab('documentacao')">Documentação</div>
+    <div class="nav-tab"        data-tab="monitoramento" onclick="switchTab('monitoramento')">Monitoramento</div>
+    <div class="nav-chips">
+      <span class="nav-chip" id="chip-atraso" style="display:none;background:rgba(220,38,38,.12);color:#fca5a5;border-color:rgba(220,38,38,.3)"></span>
+      <span class="nav-chip" id="chip-dias" style="background:rgba(255,255,255,.05);color:rgba(255,255,255,.35);border-color:rgba(255,255,255,.08)">— dias restantes</span>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════
+       ABA: VISÃO GERAL
+       ═══════════════════════════════════════════ -->
+  <div id="tab-visao-geral" class="tab-content active">
+    <!-- KPIs -->
+    <div class="grid-5" style="margin-bottom:14px">
+      <div class="kpi-card green">
+        <div class="kpi-label">Avanço físico</div>
+        <div class="kpi-value" style="color:var(--text-3)">—<span class="kpi-unit">%</span></div>
+        <div class="kpi-bar bar-track"><div class="bar-fill" style="width:0%;background:var(--green)"></div></div>
+        <div class="kpi-foot">
+          <span class="kpi-sub">0 de 0 atividades</span>
+          <span class="kpi-delta" style="color:var(--text-3)">—</span>
+        </div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">Público atingido</div>
+        <div class="kpi-value" style="color:var(--text-3)">—<span class="kpi-unit">/ —</span></div>
+        <div class="kpi-bar bar-track"><div class="bar-fill" style="width:0%;background:var(--blue)"></div></div>
+        <div class="kpi-foot">
+          <span class="kpi-sub">0% da meta</span>
+          <span class="kpi-delta" style="color:var(--text-3)">—</span>
+        </div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-label">Contrapartida</div>
+        <div class="kpi-value" style="color:var(--text-3)">—<span class="kpi-unit">/ — ações</span></div>
+        <div class="kpi-bar bar-track"><div class="bar-fill" style="width:0%;background:var(--amber)"></div></div>
+        <div class="kpi-foot">
+          <span class="kpi-sub">—</span>
+          <span class="kpi-delta" style="color:var(--text-3)">—</span>
+        </div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-label">Em atraso</div>
+        <div class="kpi-value" style="color:var(--text-3)">0<span class="kpi-unit">atividades</span></div>
+        <div class="kpi-bar bar-track"><div class="bar-fill" style="width:0%;background:var(--red)"></div></div>
+        <div class="kpi-foot">
+          <span class="kpi-sub">—</span>
+          <span class="kpi-delta" style="color:var(--text-3)">—</span>
+        </div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-label">Prestação de contas</div>
+        <div class="kpi-value" style="color:var(--text-3)">—<span class="kpi-unit">%</span></div>
+        <div class="kpi-bar bar-track"><div class="bar-fill" style="width:0%;background:var(--purple)"></div></div>
+        <div class="kpi-foot">
+          <span class="kpi-sub">—</span>
+          <span class="kpi-delta" style="color:var(--text-3)">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Corpo: Cronograma + Alertas | Saúde + Docs + Info -->
+    <div class="main-grid">
+      <div class="col">
+        <!-- Cronograma resumo -->
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">Cronograma de execução</div>
+              <div class="card-sub" id="gantt-resumo-sub">Adicione atividades na aba Execução para visualizar o cronograma</div>
+            </div>
+            <span class="card-link" onclick="switchTab('execucao')">→ Execução</span>
+          </div>
+          <div id="gantt-resumo-vazio" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px;gap:8px">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="opacity:.25"><rect x="4" y="6" width="24" height="20" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v4M22 2v4M4 12h24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9 18h4M9 22h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div style="font-size:11px;color:var(--text-3)">Nenhuma atividade cadastrada</div>
+            <button class="btn" style="font-size:10px;margin-top:4px" onclick="switchTab('execucao')">Ir para Execução →</button>
+          </div>
+          <div id="gantt-resumo-rows" style="display:none">
+            <!-- preenchido via JS quando houver atividades -->
+          </div>
+          <div class="gantt-legend" id="gantt-resumo-legend" style="display:none">
+            <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:var(--green)"></div>Concluído</div>
+            <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:var(--blue)"></div>Em andamento</div>
+            <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:var(--red)"></div>Em atraso</div>
+            <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:#9ca3af;opacity:.6"></div>Pendente</div>
+            <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:var(--amber);opacity:.7"></div>Contrapartida</div>
+          </div>
+        </div>
+
+        <!-- Alertas -->
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">Alertas e pendências</div>
+              <div class="card-sub">Itens que requerem atenção imediata</div>
+            </div>
+            <span class="pill pill-gray" id="alertas-count">Nenhuma</span>
+          </div>
+          <div id="alertas-vazio" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px;gap:8px">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="opacity:.25"><path d="M14 4l10 18H4L14 4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 11v5M14 18.5h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div style="font-size:11px;color:var(--text-3)">Sem alertas no momento</div>
+          </div>
+          <div id="alertas-lista">
+            <!-- alertas adicionados dinamicamente -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Coluna direita -->
+      <div class="col">
+        <!-- Saúde do projeto -->
+        <div class="card">
+          <div class="card-hd">
+            <div><div class="card-title">Saúde do projeto</div><div class="card-sub">Por dimensão</div></div>
+          </div>
+          <div>
+            <div class="health-item">
+              <div class="health-icon" style="background:var(--blue-bg)">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="var(--blue)" stroke-width="1.2"/><path d="M4 7.5l2 2 4-4" stroke="var(--blue)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="health-body">
+                <div class="health-label">Impacto cultural</div>
+                <div class="health-value" style="color:var(--text-3)">— <span>de —</span></div>
+                <div class="bar-track" style="margin-top:4px"><div class="bar-fill" style="width:0%;background:var(--blue)"></div></div>
+              </div>
+            </div>
+            <div class="health-item">
+              <div class="health-icon" style="background:var(--green-bg)">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="8" width="2.5" height="5" rx="1" fill="var(--green)" opacity=".5"/><rect x="6" y="5" width="2.5" height="8" rx="1" fill="var(--green)" opacity=".7"/><rect x="10" y="2" width="2.5" height="11" rx="1" fill="var(--green)"/></svg>
+              </div>
+              <div class="health-body">
+                <div class="health-label">Execução física</div>
+                <div class="health-value" style="color:var(--text-3)">—%</div>
+                <div class="bar-track" style="margin-top:4px"><div class="bar-fill" style="width:0%;background:var(--green)"></div></div>
+              </div>
+            </div>
+            <div class="health-item">
+              <div class="health-icon" style="background:var(--purple-bg)">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="3.5" width="11" height="8" rx="1.5" stroke="var(--purple)" stroke-width="1.2" fill="none"/><path d="M5 7h4M5 9h2" stroke="var(--purple)" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </div>
+              <div class="health-body">
+                <div class="health-label">Execução financeira</div>
+                <div class="health-value" style="color:var(--text-3)">— <span>de —</span></div>
+                <div class="bar-track" style="margin-top:4px"><div class="bar-fill" style="width:0%;background:var(--purple)"></div></div>
+              </div>
+            </div>
+            <div class="health-item">
+              <div class="health-icon" style="background:var(--amber-bg)">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="2" stroke="var(--amber)" stroke-width="1.2" fill="none"/><path d="M4 7l2.5 2.5 4-4" stroke="var(--amber)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="health-body">
+                <div class="health-label">Prestação de contas</div>
+                <div class="health-value" style="color:var(--text-3)">—%</div>
+                <div class="bar-track" style="margin-top:4px"><div class="bar-fill" style="width:0%;background:var(--amber)"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documentação resumo -->
+        <div class="card">
+          <div class="card-hd">
+            <div><div class="card-title">Documentação</div><div class="card-sub">Progresso por grupo</div></div>
+            <span class="card-link" onclick="switchTab('documentacao')">→ Documentação</span>
+          </div>
+          <div class="doc-summary-row">
+            <div class="doc-summary-name">Prestação de contas</div>
+            <div class="doc-summary-bar bar-track"><div class="bar-fill" style="width:0%;background:var(--blue)"></div></div>
+            <div class="doc-summary-val" style="color:var(--text-3)">—</div>
+          </div>
+          <div class="doc-summary-row">
+            <div class="doc-summary-name">Fotos e vídeos</div>
+            <div class="doc-summary-bar bar-track"><div class="bar-fill" style="width:0%;background:var(--amber)"></div></div>
+            <div class="doc-summary-val" style="color:var(--text-3)">—</div>
+          </div>
+          <div class="doc-summary-row">
+            <div class="doc-summary-name">Proponente</div>
+            <div class="doc-summary-bar bar-track"><div class="bar-fill" style="width:0%;background:var(--green)"></div></div>
+            <div class="doc-summary-val" style="color:var(--text-3)">—</div>
+          </div>
+          <div class="doc-summary-row">
+            <div class="doc-summary-name">Contratos</div>
+            <div class="doc-summary-bar bar-track"><div class="bar-fill" style="width:0%;background:var(--amber)"></div></div>
+            <div class="doc-summary-val" style="color:var(--text-3)">—</div>
+          </div>
+          <div class="doc-summary-row">
+            <div class="doc-summary-name">Edital</div>
+            <div class="doc-summary-bar bar-track"><div class="bar-fill" style="width:0%;background:var(--green)"></div></div>
+            <div class="doc-summary-val" style="color:var(--text-3)">—</div>
+          </div>
+          <div class="doc-summary-row">
+            <div class="doc-summary-name">Acessibilidade</div>
+            <div class="doc-summary-bar bar-track"><div class="bar-fill" style="width:0%;background:var(--amber)"></div></div>
+            <div class="doc-summary-val" style="color:var(--text-3)">—</div>
+          </div>
+        </div>
+
+        <!-- Informações do projeto -->
+        <div class="card">
+          <div class="card-hd">
+            <div><div class="card-title">Informações do projeto</div></div>
+          </div>
+          <div class="info-grid">
+            <div class="info-box"><div class="info-label">Gerente</div><div class="info-value">—</div></div>
+            <div class="info-box"><div class="info-label">Área cultural</div><div class="info-value">—</div></div>
+            <div class="info-box"><div class="info-label">Início</div><div class="info-value">—</div></div>
+            <div class="info-box"><div class="info-label">Término</div><div class="info-value">—</div></div>
+            <div class="info-box"><div class="info-label">Fonte</div><div class="info-value">—</div></div>
+            <div class="info-box"><div class="info-label">Edital</div><div class="info-value">—</div></div>
+          </div>
+          <div class="info-money">
+            <div><div class="info-label">Valor aprovado</div><div class="info-value" style="font-size:16px;color:var(--text-3)">—</div></div>
+            <div class="info-divider"></div>
+            <div style="text-align:right"><div class="info-label">Executado</div><div class="info-value" style="font-size:16px;color:var(--text-3)">—</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       ABA: EXECUÇÃO
+       ═══════════════════════════════════════════ -->
+  <div id="tab-execucao" class="tab-content">
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <select class="form-select-sm" id="filter-fase" onchange="filterAtividades()">
+        <option value="">Todas as fases</option>
+        <option value="pre">Pré-produção</option>
+        <option value="prod">Produção</option>
+        <option value="pos">Pós-produção</option>
+      </select>
+      <select class="form-select-sm" id="filter-status" onchange="filterAtividades()">
+        <option value="">Todos os status</option>
+        <option value="concluido">Concluído</option>
+        <option value="andamento">Em andamento</option>
+        <option value="atraso">Em atraso</option>
+        <option value="pendente">Pendente</option>
+      </select>
+      <div class="toolbar-sep"></div>
+      <span style="font-size:10px;color:var(--text-3)" id="ativ-count">0 atividades</span>
+      <div class="toolbar-right">
+        <button class="btn" onclick="switchView('gantt')" id="btn-gantt" style="border-color:var(--blue);color:var(--blue)">Gantt</button>
+        <button class="btn" onclick="switchView('lista')" id="btn-lista">Lista</button>
+        <div class="toolbar-sep"></div>
+        <button class="btn btn-primary" onclick="openModalOcorrencia()">+ Registrar ocorrência</button>
+      </div>
+    </div>
+
+    <!-- Gantt completo -->
+    <div id="view-gantt" class="card" style="margin-bottom:12px">
+      <div class="card-hd">
+        <div><div class="card-title">Cronograma de execução</div><div class="card-sub" id="gantt-sub">Adicione atividades para visualizar o cronograma</div></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:9.5px;color:var(--red)" id="gantt-hoje-lbl" style="display:none">
+          <div style="width:10px;height:2px;background:var(--red);border-radius:1px"></div>
+          Hoje
+        </div>
+      </div>
+      <!-- Cabeçalho de meses — gerado dinamicamente -->
+      <div id="gantt-header"></div>
+      <!-- Fases e barras — geradas dinamicamente -->
+      <div id="gantt-body">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 16px;gap:10px">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" style="opacity:.2"><rect x="4" y="6" width="28" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M12 2v4M24 2v4M4 14h28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 21h6M10 25h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <div style="font-size:12px;font-weight:500;color:var(--text-3)">Nenhuma atividade cadastrada</div>
+          <div style="font-size:10.5px;color:var(--text-3)">Use o botão abaixo para adicionar a primeira atividade</div>
+          <button class="btn btn-primary" style="margin-top:4px" onclick="openModalAtividade()">+ Adicionar atividade</button>
+        </div>
+      </div>
+      <div class="gantt-legend" id="gantt-legend" style="display:none">
+        <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:var(--green)"></div>Concluído</div>
+        <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:var(--blue)"></div>Em andamento</div>
+        <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:var(--red)"></div>Em atraso</div>
+        <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:#9ca3af;opacity:.6"></div>Pendente</div>
+        <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:var(--amber);opacity:.7"></div>Contrapartida</div>
+        <div class="gantt-leg-item"><div class="gantt-leg-sq" style="background:var(--purple);opacity:.5"></div>Contínuo</div>
+      </div>
+    </div>
+
+    <!-- Lista de atividades -->
+    <div id="view-lista" class="card" style="display:none">
+      <div class="card-hd">
+        <div><div class="card-title">Lista de atividades</div><div class="card-sub">8 ocorrências registradas de 14 previstas · clique em uma linha para detalhes</div></div>
+        <button class="btn btn-primary" onclick="openModalAtividade()">+ Nova atividade</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="tbl" id="ativ-table">
+          <thead>
+            <tr>
+              <th style="width:30px"></th>
+              <th>Atividade</th>
+              <th>Tipo</th>
+              <th>Fase</th>
+              <th>Responsável</th>
+              <th>Prazo</th>
+              <th>Público prev. / ating.</th>
+              <th>Execução</th>
+              <th>Status</th>
+              <th>Docs</th>
+            </tr>
+          </thead>
+          <tbody id="ativ-tbody">
+            <!-- Preenchido via JS -->
+          </tbody>
+          <tfoot>
+            <tr style="background:var(--surface-2)">
+              <td colspan="6" style="font-size:10px;font-weight:600;color:var(--text-2)">Total</td>
+              <td style="font-size:10px;font-weight:600;color:var(--blue)">0 / 0 pessoas</td>
+              <td style="font-size:10px;font-weight:600;color:var(--green)">0%</td>
+              <td style="font-size:10px;color:var(--text-2)">0 concluídas</td>
+              <td style="font-size:10px;color:var(--amber)">0 pend.</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       ABAS RESTANTES — PLACEHOLDERS
+       ═══════════════════════════════════════════ -->
+  <div id="tab-planejamento" class="tab-content">
+    <div class="tab-placeholder">
+      <div class="tab-placeholder-icon">📋</div>
+      <div class="tab-placeholder-title">Planejamento</div>
+      <div class="tab-placeholder-sub">Esta aba está em desenvolvimento. Conterá identificação do projeto, objetivos, público-alvo, orçamento previsto, acessibilidade e histórico de alterações.</div>
+    </div>
+  </div>
+
+  <div id="tab-financeiro" class="tab-content">
+    <div class="tab-placeholder">
+      <div class="tab-placeholder-icon">💰</div>
+      <div class="tab-placeholder-title">Financeiro</div>
+      <div class="tab-placeholder-sub">Execução orçamentária por rubrica, fluxo de caixa, competência por atividade, conformidade com o edital e pagamentos pendentes.</div>
+    </div>
+  </div>
+
+  <div id="tab-pessoas" class="tab-content">
+    <div class="tab-placeholder">
+      <div class="tab-placeholder-icon">👥</div>
+      <div class="tab-placeholder-title">Pessoas</div>
+      <div class="tab-placeholder-sub">Equipe, parceiros, fornecedores e público. Inclui matriz RACI com indicadores por atividade.</div>
+    </div>
+  </div>
+
+  <div id="tab-comunicacao" class="tab-content">
+    <div class="tab-placeholder">
+      <div class="tab-placeholder-icon">📢</div>
+      <div class="tab-placeholder-title">Comunicação</div>
+      <div class="tab-placeholder-sub">Central de mensagens, monitoramento de redes sociais, peças produzidas e histórico de comunicados.</div>
+    </div>
+  </div>
+
+  <div id="tab-documentacao" class="tab-content">
+    <div class="tab-placeholder">
+      <div class="tab-placeholder-icon">📁</div>
+      <div class="tab-placeholder-title">Documentação</div>
+      <div class="tab-placeholder-sub">Controle de documentos por grupo: prestação de contas, fotos/vídeos, proponente, contratos, edital e acessibilidade.</div>
+    </div>
+  </div>
+
+  <div id="tab-monitoramento" class="tab-content">
+    <div class="tab-placeholder">
+      <div class="tab-placeholder-icon">📊</div>
+      <div class="tab-placeholder-title">Monitoramento</div>
+      <div class="tab-placeholder-sub">Visão executiva com indicadores de impacto, desvios, saúde geral do projeto e lições aprendidas.</div>
+    </div>
+  </div>
+
+</div><!-- fim .app -->
+
+<!-- ═══════════════════════════════════════════
+     MODAL — REGISTRAR OCORRÊNCIA
+     ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-ocorrencia">
+  <div class="modal">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-title">Registrar ocorrência</div>
+        <div class="modal-sub" id="ocor-modal-sub">Selecione a atividade ao registrar</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-ocorrencia')">×</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div class="section-label">Dados da ocorrência</div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label class="form-label">Data realizada</label>
+            <input class="form-input" type="date" id="ocor-data">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Horário</label>
+            <input class="form-input" type="text" id="ocor-horario" placeholder="Ex: 14h00 – 17h00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Local / bairro</label>
+            <input class="form-input" type="text" id="ocor-local" placeholder="Ex: Bairro Norte — CEI">
+          </div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--border)"></div>
+      <div>
+        <div class="section-label">Público</div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label class="form-label">Público previsto</label>
+            <input class="form-input" type="number" id="ocor-pub-prev" placeholder="0" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Público presencial</label>
+            <input class="form-input" type="number" id="ocor-pub-pres" placeholder="0" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Público online</label>
+            <input class="form-input" type="number" id="ocor-pub-online" placeholder="0" min="0">
+          </div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--border)"></div>
+      <div>
+        <div class="section-label">Observações</div>
+        <textarea class="form-textarea" id="ocor-obs" rows="3" placeholder="Descreva como foi a ocorrência, imprevistos, destaques..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div style="font-size:9.5px;color:var(--text-3)">Documentos desta ocorrência → aba Documentação</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" onclick="closeModal('modal-ocorrencia')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveOcorrencia()">Salvar ocorrência</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MODAL — NOVA ATIVIDADE
+     ═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-atividade">
+  <div class="modal">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-title">Nova atividade</div>
+        <div class="modal-sub">Defina os dados da atividade antes de iniciar o planejamento de ocorrências</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-atividade')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Nome da atividade</label>
+        <input class="form-input" type="text" id="ativ-nome" placeholder="Ex: Rodas de leitura">
+      </div>
+      <div class="grid-3">
+        <div class="form-group">
+          <label class="form-label">Fase</label>
+          <select class="form-select" id="ativ-fase">
+            <option value="pre">Pré-produção</option>
+            <option value="prod" selected>Produção</option>
+            <option value="pos">Pós-produção</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo</label>
+          <select class="form-select" id="select-tipo"
+            onchange="onSelectChange('select-tipo','gc-tipos',TIPOS_ATIVIDADE)">
+            <!-- populado via popularSelects() -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Responsável</label>
+          <select class="form-select" id="select-responsavel"
+            onchange="onSelectChange('select-responsavel','gc-responsaveis',RESPONSAVEIS)">
+            <!-- populado via popularSelects() -->
+          </select>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Data de início</label>
+          <input class="form-input" type="date" id="ativ-inicio">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Data de término</label>
+          <input class="form-input" type="date" id="ativ-termino">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Nº de ocorrências previstas</label>
+          <input class="form-input" type="number" id="ativ-ocorrencias" value="1" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Público total previsto</label>
+          <input class="form-input" type="number" id="ativ-pub-prev" placeholder="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Produto entregável</label>
+        <input class="form-input" type="text" id="ativ-produto" placeholder="Ex: Relatório + lista de presença + fotos">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div style="font-size:9.5px;color:var(--red);display:none" id="ativ-erro"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" onclick="closeModal('modal-atividade')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveAtividade()">Salvar atividade</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════ -->
+<script>
+
+/* ── DADOS DO PROJETO ── */
+/* Para adicionar um novo projeto:
+   1. Copie o bloco { id: 'p1', ... } abaixo
+   2. Mude o id para 'p3' (ou próximo disponível)
+   3. Preencha os campos com os dados do novo projeto
+   4. Adicione um <option> no #project-select no HTML
+*/
+const PROJETOS = {
+  p1: {
+    nome:           'Novo projeto',
+    area:           '—',
+    fonte:          '—',
+    status:         'Aguardando configuração',
+    statusColor:    '#9b9892',
+    gerente:        '—',
+    inicio:         '—',
+    termino:        '—',
+    valorAprovado:  '—',
+    valorExecutado: 'R$ 0',
+    diasRestantes:  0,
+    atrasadas:      0,
+  },
+};
+
+/* ── ATIVIDADES ── */
+/* Para editar uma atividade: localize pelo campo id abaixo e altere os campos.
+   Campos disponíveis: id, nome, tipo, fase, responsavel, prazo, pubPrev, pubAting, execPct, status
+   Status possíveis: 'concluido', 'andamento', 'atraso', 'pendente', 'contrapartida'
+*/
+let ATIVIDADES = JSON.parse(localStorage.getItem('gc-atividades') || '[]');
+
+function salvarAtividades() {
+  localStorage.setItem('gc-atividades', JSON.stringify(ATIVIDADES));
+}
+
+const FASE_LABELS = { pre: 'Pré-produção', prod: 'Produção', pos: 'Pós-produção' };
+
+/* ── LISTAS EDITÁVEIS — RESPONSÁVEIS E TIPOS ── */
+let RESPONSAVEIS = JSON.parse(localStorage.getItem('gc-responsaveis') || '[]');
+let TIPOS_ATIVIDADE = JSON.parse(
+  localStorage.getItem('gc-tipos') ||
+  '["Operacional","Contrapartida","Acessibilidade"]'
+);
+
+function popularSelects() {
+  const selResp = document.getElementById('select-responsavel');
+  const selTipo = document.getElementById('select-tipo');
+  if (!selResp || !selTipo) return;
+
+  const valorResp = selResp.value;
+  const valorTipo = selTipo.value;
+
+  selResp.innerHTML = '<option value="">Selecione…</option>';
+  RESPONSAVEIS.forEach(r => {
+    selResp.innerHTML += `<option value="${r}">${r}</option>`;
+  });
+  selResp.innerHTML += '<option value="__novo__">+ Adicionar novo...</option>';
+  if (valorResp) selResp.value = valorResp;
+
+  selTipo.innerHTML = '<option value="">Selecione…</option>';
+  TIPOS_ATIVIDADE.forEach(t => {
+    selTipo.innerHTML += `<option value="${t}">${t}</option>`;
+  });
+  selTipo.innerHTML += '<option value="__novo__">+ Adicionar novo...</option>';
+  if (valorTipo) selTipo.value = valorTipo;
+}
+
+function onSelectChange(selectId, storageKey, listaRef) {
+  const sel = document.getElementById(selectId);
+  if (sel.value !== '__novo__') return;
+
+  const novo = prompt('Digite o novo valor:');
+  if (!novo || !novo.trim()) { sel.value = ''; return; }
+
+  const novoTrimado = novo.trim();
+  if (!listaRef.includes(novoTrimado)) {
+    listaRef.push(novoTrimado);
+    localStorage.setItem(storageKey, JSON.stringify(listaRef));
+  }
+  popularSelects();
+  sel.value = novoTrimado;
+}
+
+const STATUS_CONFIG = {
+  concluido:    { label:'Concluído',       cls:'pill-green',  color:'var(--green)' },
+  andamento:    { label:'Em andamento',    cls:'pill-blue',   color:'var(--blue)' },
+  atraso:       { label:'Em atraso',       cls:'pill-red',    color:'var(--red)' },
+  pendente:     { label:'Pendente',        cls:'pill-gray',   color:'var(--text-3)' },
+  contrapartida:{ label:'Contrapartida',   cls:'pill-amber',  color:'var(--amber)' },
+};
+
+const TIPO_COLORS = {
+  'Operacional':   { bg:'var(--green-bg)',  text:'var(--green-text)' },
+  'Contrapartida': { bg:'var(--amber-bg)',  text:'var(--amber-text)' },
+  'Acessibilidade':{ bg:'var(--blue-bg)',   text:'var(--blue-text)' },
+};
+
+/* ── ALTERNÂNCIA DE ABAS ── */
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+  if (tab === 'execucao') renderAtividades();
+}
+
+/* ── LIGHT / DARK MODE ── */
+function toggleTheme() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  setTheme(dark ? 'light' : 'dark');
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
+  localStorage.setItem('gc-theme', theme);
+  document.getElementById('icon-sun').style.display  = theme === 'dark' ? 'block' : 'none';
+  document.getElementById('icon-moon').style.display = theme === 'dark' ? 'none'  : 'block';
+}
+
+/* Aplica tema salvo ou preferência do sistema */
+(function initTheme() {
+  const saved = localStorage.getItem('gc-theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  setTheme(saved || (prefersDark ? 'dark' : 'light'));
+})();
+
+/* ── TROCA DE PROJETO ── */
+function switchProject(id) {
+  const p = PROJETOS[id];
+  if (!p) return;
+  document.getElementById('hdr-area').textContent   = p.area;
+  document.getElementById('hdr-fonte').textContent  = p.fonte;
+  document.getElementById('hdr-status-txt').textContent = p.status;
+  document.getElementById('hdr-status-dot').style.background = p.statusColor;
+  document.getElementById('chip-dias').textContent  = p.diasRestantes + ' dias restantes';
+  if (p.atrasadas > 0) {
+    document.getElementById('chip-atraso').textContent = p.atrasadas + ' em atraso';
+    document.getElementById('chip-atraso').style.display = '';
+  } else {
+    document.getElementById('chip-atraso').style.display = 'none';
+  }
+  showToast('Projeto alterado: ' + p.nome);
+}
+
+/* ── VISUALIZAÇÃO DO CRONOGRAMA (GANTT / LISTA) ── */
+function switchView(view) {
+  document.getElementById('view-gantt').style.display = view === 'gantt' ? 'block' : 'none';
+  document.getElementById('view-lista').style.display = view === 'lista' ? 'block' : 'none';
+  document.getElementById('btn-gantt').style.borderColor = view === 'gantt' ? 'var(--blue)' : '';
+  document.getElementById('btn-gantt').style.color       = view === 'gantt' ? 'var(--blue)' : '';
+  document.getElementById('btn-lista').style.borderColor = view === 'lista' ? 'var(--blue)' : '';
+  document.getElementById('btn-lista').style.color       = view === 'lista' ? 'var(--blue)' : '';
+  if (view === 'lista') renderAtividades();
+}
+
+/* ── RENDERIZAÇÃO DA TABELA DE ATIVIDADES ── */
+function renderAtividades() {
+  const faseFilter   = document.getElementById('filter-fase').value;
+  const statusFilter = document.getElementById('filter-status').value;
+  const tbody        = document.getElementById('ativ-tbody');
+
+  let filtradas = ATIVIDADES.filter(a => {
+    if (faseFilter   && a.fase   !== faseFilter)   return false;
+    if (statusFilter && a.status !== statusFilter) return false;
+    return true;
+  });
+
+  document.getElementById('ativ-count').textContent = filtradas.length + ' atividades';
+
+  let html = '';
+  let faseAtual = '';
+
+  filtradas.forEach(a => {
+    /* Cabeçalho de fase */
+    if (a.fase !== faseAtual) {
+      faseAtual = a.fase;
+      html += `<tr>
+        <td colspan="10" style="background:var(--surface-2);font-size:9px;font-weight:700;
+          text-transform:uppercase;letter-spacing:.07em;color:var(--text-3);
+          padding:4px 8px;">${FASE_LABELS[a.fase]}</td>
+      </tr>`;
+    }
+
+    const st  = STATUS_CONFIG[a.status] || STATUS_CONFIG.pendente;
+    const tip = TIPO_COLORS[a.tipo] || TIPO_COLORS['Operacional'];
+
+    const pub = a.pubPrev
+      ? `<div style="font-size:9.5px">${a.pubAting != null ? a.pubAting : '—'} / ${a.pubPrev}</div>
+         <div class="mini-bar"><div class="mini-fill" style="width:${a.pubPrev ? Math.round((a.pubAting||0)/a.pubPrev*100) : 0}%;background:${st.color}"></div></div>`
+      : `<span style="font-size:9.5px;color:var(--text-3)">—</span>`;
+
+    const execBar = `<div style="font-size:9.5px;font-weight:600;color:${st.color}">${a.execPct}%</div>
+      <div class="mini-bar"><div class="mini-fill" style="width:${a.execPct}%;background:${st.color}"></div></div>`;
+
+    html += `<tr onclick="showToast('${a.nome} — clique no botão + Registrar ocorrência para adicionar dados')">
+      <td><span class="ativ-ind" style="background:${tip.bg};color:${tip.text}">${a.id}</span></td>
+      <td style="font-weight:500">${a.nome}</td>
+      <td><span class="pill" style="background:${tip.bg};color:${tip.text};border-color:transparent;font-size:9px">${a.tipo}</span></td>
+      <td style="font-size:9.5px;color:var(--text-3)">${FASE_LABELS[a.fase]}</td>
+      <td style="font-size:9.5px;color:var(--text-2)">${a.responsavel}</td>
+      <td style="font-size:9.5px;${a.status==='atraso'?'color:var(--red);font-weight:600':''}">${a.prazo}</td>
+      <td>${pub}</td>
+      <td>${execBar}</td>
+      <td><span class="pill ${st.cls}">${st.label}</span></td>
+      <td><button class="btn" style="font-size:9px;padding:3px 8px" onclick="event.stopPropagation();switchTab('documentacao')">Docs</button></td>
+    </tr>`;
+  });
+
+  tbody.innerHTML = html;
+}
+
+/* ── FILTRO ── */
+function filterAtividades() {
+  renderAtividades();
+}
+
+/* ── MODAIS ── */
+function openModalOcorrencia() {
+  /* Preenche a data com hoje por padrão */
+  const hoje = new Date().toISOString().slice(0, 10);
+  document.getElementById('ocor-data').value = hoje;
+  document.getElementById('ocor-horario').value = '';
+  document.getElementById('ocor-local').value = '';
+  document.getElementById('ocor-pub-prev').value = '';
+  document.getElementById('ocor-pub-pres').value = '';
+  document.getElementById('ocor-pub-online').value = '';
+  document.getElementById('ocor-obs').value = '';
+  document.getElementById('modal-ocorrencia').classList.add('open');
+}
+
+function openModalAtividade() {
+  /* Limpa os campos antes de abrir */
+  document.getElementById('ativ-nome').value = '';
+  document.getElementById('ativ-fase').value = 'prod';
+  document.getElementById('ativ-inicio').value = '';
+  document.getElementById('ativ-termino').value = '';
+  document.getElementById('ativ-ocorrencias').value = '1';
+  document.getElementById('ativ-pub-prev').value = '';
+  document.getElementById('ativ-produto').value = '';
+  document.getElementById('ativ-erro').style.display = 'none';
+  popularSelects();
+  document.getElementById('modal-atividade').classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+/* Fecha modal ao clicar fora */
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+/* ── SALVAR OCORRÊNCIA ── */
+function saveOcorrencia() {
+  const data      = document.getElementById('ocor-data').value;
+  const horario   = document.getElementById('ocor-horario').value.trim();
+  const local     = document.getElementById('ocor-local').value.trim();
+  const pubPrev   = parseInt(document.getElementById('ocor-pub-prev').value)  || 0;
+  const pubPres   = parseInt(document.getElementById('ocor-pub-pres').value)  || 0;
+  const pubOnline = parseInt(document.getElementById('ocor-pub-online').value) || 0;
+  const obs       = document.getElementById('ocor-obs').value.trim();
+
+  if (!data) { alert('Informe a data da ocorrência.'); return; }
+
+  const ocorrencias = JSON.parse(localStorage.getItem('gc-ocorrencias') || '[]');
+  ocorrencias.push({
+    id:        'OC' + Date.now(),
+    data,
+    horario,
+    local,
+    pubPrev,
+    pubPres,
+    pubOnline,
+    obs,
+    criadoEm: new Date().toISOString(),
+  });
+  localStorage.setItem('gc-ocorrencias', JSON.stringify(ocorrencias));
+
+  closeModal('modal-ocorrencia');
+  showToast('Ocorrência registrada com sucesso');
+}
+
+/* ── SALVAR ATIVIDADE ── */
+function saveAtividade() {
+  const nome      = document.getElementById('ativ-nome').value.trim();
+  const fase      = document.getElementById('ativ-fase').value;
+  const tipo      = document.getElementById('select-tipo').value;
+  const resp      = document.getElementById('select-responsavel').value;
+  const inicio    = document.getElementById('ativ-inicio').value;
+  const termino   = document.getElementById('ativ-termino').value;
+  const ocorPrev  = parseInt(document.getElementById('ativ-ocorrencias').value) || 1;
+  const pubPrev   = parseInt(document.getElementById('ativ-pub-prev').value) || null;
+  const produto   = document.getElementById('ativ-produto').value.trim();
+  const erroEl    = document.getElementById('ativ-erro');
+
+  /* Validação mínima */
+  if (!nome) {
+    erroEl.textContent = 'Informe o nome da atividade.';
+    erroEl.style.display = 'block';
+    return;
+  }
+  if (!tipo) {
+    erroEl.textContent = 'Selecione o tipo da atividade.';
+    erroEl.style.display = 'block';
+    return;
+  }
+  erroEl.style.display = 'none';
+
+  /* Gera id sequencial: A1, A2, A3... */
+  const proximoNum = ATIVIDADES.length + 1;
+  const novaId = 'A' + proximoNum;
+
+  /* Formata prazo como Mês/Ano a partir da data de término */
+  let prazo = '—';
+  if (termino) {
+    const [y, m] = termino.split('-');
+    const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    prazo = meses[parseInt(m, 10) - 1] + '/' + y.slice(2);
+  }
+
+  const novaAtividade = {
+    id:           novaId,
+    nome,
+    tipo,
+    fase,
+    responsavel:  resp || '—',
+    inicio,
+    termino,
+    prazo,
+    ocorPrev,
+    pubPrev:      pubPrev || null,
+    pubAting:     null,
+    execPct:      0,
+    status:       'pendente',
+    produto,
+    criadoEm:     new Date().toISOString(),
+  };
+
+  ATIVIDADES.push(novaAtividade);
+  salvarAtividades();
+
+  closeModal('modal-atividade');
+  renderAtividades();
+  showToast('Atividade "' + nome + '" adicionada com sucesso');
+}
+
+/* ── TOAST ── */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ── DADOS DE EXEMPLO ── */
+/* Botão no console: loadSampleData() carrega dados de exemplo */
+function loadSampleData() {
+  showToast('Dados de exemplo carregados');
+}
+
+/* ── INICIALIZAÇÃO ── */
+renderAtividades();
+
+/* ═══════════════════════════════════════════════
+   SISTEMA DE ONBOARDING E LOGIN
+   ═══════════════════════════════════════════════ */
+
+/* ── CHAVES DO localStorage ── */
+const KEY_CONFIG  = 'gc-config';   /* configurações do projeto */
+const KEY_AUTH    = 'gc-auth';     /* credenciais (hash) */
+const KEY_SESSION = 'gc-session';  /* sessão ativa */
+
+/* ── CONTROLE DE TELAS ── */
+/* Possíveis telas: 'login', 'onboarding', 'dashboard' */
+function showScreen(name) {
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('screen-onboarding').classList.remove('active');
+  document.querySelector('.app').style.display = 'none';
+
+  if (name === 'login') {
+    document.getElementById('screen-login').classList.add('active');
+    populateLoginScreen();
+  } else if (name === 'onboarding') {
+    document.getElementById('screen-onboarding').classList.add('active');
+    obGoTo(1);
+  } else if (name === 'dashboard') {
+    document.querySelector('.app').style.display = 'flex';
+    applyProjectConfig();
+  }
+}
+
+/* ── INICIALIZAÇÃO DO FLUXO ── */
+(function initApp() {
+  const config  = loadConfig();
+  const session = localStorage.getItem(KEY_SESSION);
+
+  if (!config) {
+    /* Primeiro acesso: nenhuma configuração encontrada */
+    showScreen('onboarding');
+  } else if (session === 'active') {
+    /* Sessão ativa: vai direto para o dashboard */
+    showScreen('dashboard');
+  } else {
+    /* Configuração existe, mas não há sessão: pede login */
+    showScreen('login');
+  }
+})();
+
+/* ── CARREGAR / SALVAR CONFIGURAÇÃO ── */
+function loadConfig() {
+  try { return JSON.parse(localStorage.getItem(KEY_CONFIG)); } catch(e) { return null; }
+}
+
+function saveConfig(cfg) {
+  localStorage.setItem(KEY_CONFIG, JSON.stringify(cfg));
+}
+
+/* ── APLICAR CONFIGURAÇÕES AO DASHBOARD ── */
+function applyProjectConfig() {
+  const cfg = loadConfig();
+  if (!cfg) return;
+
+  /* Header */
+  document.getElementById('hdr-area').textContent  = cfg.area  || '—';
+  document.getElementById('hdr-fonte').textContent = cfg.fonteShort || cfg.fonte || '—';
+  document.getElementById('hdr-status-txt').textContent = cfg.status || 'Em execução';
+
+  /* Seletor de projeto */
+  const sel = document.getElementById('project-select');
+  if (sel.options[0]) sel.options[0].text = cfg.nome;
+
+  /* Atualiza PROJETOS[p1] com dados reais */
+  if (window.PROJETOS && PROJETOS.p1) {
+    PROJETOS.p1.nome    = cfg.nome;
+    PROJETOS.p1.area    = cfg.area;
+    PROJETOS.p1.fonte   = cfg.fonteShort || cfg.fonte;
+    PROJETOS.p1.gerente = cfg.respNome;
+    PROJETOS.p1.inicio  = formatDateBR(cfg.inicio);
+    PROJETOS.p1.termino = formatDateBR(cfg.termino);
+    PROJETOS.p1.valorAprovado = cfg.valor ? 'R$ ' + cfg.valor : '—';
+  }
+
+  /* Informações do projeto na visão geral */
+  const infoBoxes = document.querySelectorAll('.info-box');
+  infoBoxes.forEach(box => {
+    const lbl = box.querySelector('.info-label');
+    const val = box.querySelector('.info-value');
+    if (!lbl || !val) return;
+    const txt = lbl.textContent.trim();
+    if (txt === 'Gerente')     val.textContent = cfg.respNome  || '—';
+    if (txt === 'Área cultural') val.textContent = cfg.area    || '—';
+    if (txt === 'Início')      val.textContent = formatDateBR(cfg.inicio)  || '—';
+    if (txt === 'Término')     val.textContent = formatDateBR(cfg.termino) || '—';
+    if (txt === 'Fonte')       val.textContent = cfg.fonteShort || cfg.fonte || '—';
+    if (txt === 'Edital')      val.textContent = cfg.edital    || '—';
+  });
+
+  /* Valor aprovado no card financeiro */
+  const moneyCard = document.querySelector('.info-money');
+  if (moneyCard && cfg.valor) {
+    const vals = moneyCard.querySelectorAll('.info-value');
+    if (vals[0]) vals[0].textContent = 'R$ ' + cfg.valor;
+  }
+}
+
+function formatDateBR(iso) {
+  if (!iso) return '—';
+  const [y, m, d] = iso.split('-');
+  if (!y || !m || !d) return iso;
+  return d + '/' + m + '/' + y;
+}
+
+/* ── TELA DE LOGIN ── */
+function populateLoginScreen() {
+  const cfg = loadConfig();
+  if (cfg && cfg.nome) {
+    document.getElementById('login-project-name').textContent = cfg.nome;
+  }
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  let ok = true;
+
+  if (!email || !email.includes('@')) {
+    showErr('err-login-email'); ok = false;
+  }
+
+  const auth = JSON.parse(localStorage.getItem(KEY_AUTH) || '{}');
+  if (ok && (auth.email !== email || auth.hash !== simpleHash(senha))) {
+    showErr('err-login-senha'); ok = false;
+  }
+
+  if (ok) {
+    localStorage.setItem(KEY_SESSION, 'active');
+    showScreen('dashboard');
+    showToast('Bem-vinda ao dashboard!');
+  }
+}
+
+function goToOnboarding() {
+  showScreen('onboarding');
+}
+
+function forgotPassword() {
+  showToast('Dica: a senha está salva no localStorage do seu navegador. Para redefinir, abra o console e execute: resetPassword()');
+}
+
+/* ── ONBOARDING: NAVEGAÇÃO ENTRE ETAPAS ── */
+let obSelectedArea = '';
+
+function obGoTo(step) {
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('ob-step-' + i);
+    if (el) el.style.display = i === step ? 'block' : 'none';
+  }
+  updateProgressBar(step);
+  if (step === 5) fillReviewScreen();
+}
+
+function obNext(currentStep) {
+  if (!obValidate(currentStep)) return;
+  obGoTo(currentStep + 1);
+  window.scrollTo(0, 0);
+}
+
+function obBack(currentStep) {
+  obGoTo(currentStep - 1);
+  window.scrollTo(0, 0);
+}
+
+function obValidate(step) {
+  let valid = true;
+
+  if (step === 1) {
+    const nome    = document.getElementById('ob-nome').value.trim();
+    const inicio  = document.getElementById('ob-inicio').value;
+    const termino = document.getElementById('ob-termino').value;
+    if (!nome)    { showErr('err-ob-nome');   valid = false; }
+    if (!inicio)  { showErr('err-ob-inicio'); valid = false; }
+    if (!termino || (inicio && termino && termino <= inicio)) {
+      showErr('err-ob-termino'); valid = false;
+    }
+  }
+
+  if (step === 2) {
+    if (!obSelectedArea) { showErr('err-ob-area');  valid = false; }
+    const fonte = document.getElementById('ob-fonte').value;
+    if (!fonte) { showErr('err-ob-fonte'); valid = false; }
+  }
+
+  if (step === 3) {
+    const nome = document.getElementById('ob-resp-nome').value.trim();
+    if (!nome) { showErr('err-ob-resp-nome'); valid = false; }
+  }
+
+  if (step === 4) {
+    const email  = document.getElementById('ob-email').value.trim();
+    const senha  = document.getElementById('ob-senha').value;
+    const senha2 = document.getElementById('ob-senha2').value;
+    if (!email || !email.includes('@'))  { showErr('err-ob-email');  valid = false; }
+    if (senha.length < 8)                { showErr('err-ob-senha');  valid = false; }
+    if (senha !== senha2)                { showErr('err-ob-senha2'); valid = false; }
+  }
+
+  return valid;
+}
+
+/* ── BARRA DE PROGRESSO ── */
+function updateProgressBar(current) {
+  for (let i = 1; i <= 5; i++) {
+    const num = document.getElementById('prog-' + i);
+    const lbl = document.getElementById('prog-lbl-' + i);
+    if (!num || !lbl) continue;
+    num.className = 'sc-prog-num ' + (i < current ? 'done' : i === current ? 'active' : 'idle');
+    lbl.className = 'sc-prog-label' + (i === current ? ' active' : '');
+    if (i < current) num.innerHTML = '✓';
+    else num.textContent = i;
+  }
+  for (let i = 1; i <= 4; i++) {
+    const line = document.getElementById('prog-line-' + i);
+    if (line) line.className = 'sc-prog-line' + (i < current ? ' done' : '');
+  }
+}
+
+/* ── SELEÇÃO DE ÁREA CULTURAL ── */
+function selectArea(btn) {
+  document.querySelectorAll('.area-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  obSelectedArea = btn.dataset.area;
+  clearErr('err-ob-area');
+  const outraWrap = document.getElementById('area-outra-wrap');
+  outraWrap.style.display = obSelectedArea === 'Outra' ? 'block' : 'none';
+}
+
+/* ── PREVIEW DO AVATAR ── */
+function updateAvatarPreview() {
+  const nome  = (document.getElementById('ob-resp-nome')  || {}).value || '';
+  const cargo = (document.getElementById('ob-resp-cargo') || {}).value || 'Gestora do projeto';
+
+  const iniciais = nome.trim().split(' ')
+    .filter(Boolean).slice(0,2)
+    .map(p => p[0].toUpperCase()).join('');
+
+  const el = document.getElementById('avatar-iniciais');
+  const en = document.getElementById('avatar-nome-preview');
+  const ec = document.getElementById('avatar-cargo-preview');
+  if (el) el.textContent = iniciais || '—';
+  if (en) en.textContent = nome  || 'Seu nome aparecerá aqui';
+  if (ec) ec.textContent = cargo || 'Gestora do projeto';
+}
+
+/* ── FORÇA DA SENHA ── */
+function checkPwdStrength() {
+  const s = document.getElementById('ob-senha').value;
+  let score = 0;
+  if (s.length >= 8)  score++;
+  if (s.length >= 12) score++;
+  if (/[A-Z]/.test(s) && /[a-z]/.test(s)) score++;
+  if (/[0-9]/.test(s)) score++;
+  if (/[^A-Za-z0-9]/.test(s)) score++;
+  score = Math.min(score, 4);
+
+  const colors  = ['', '#ef4444', '#f59e0b', '#3b82f6', '#16a34a'];
+  const labels  = ['', 'Senha fraca', 'Senha razoável', 'Senha boa', 'Senha forte'];
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById('pb' + i).style.background = i <= score ? colors[score] : 'var(--surface-3)';
+  }
+  const lbl = document.getElementById('pwd-label');
+  if (lbl) { lbl.textContent = s.length ? labels[score] : 'Use pelo menos 8 caracteres com letras e números'; lbl.style.color = s.length ? colors[score] : 'var(--text-3)'; }
+  clearErr('err-ob-senha');
+}
+
+/* ── TELA DE REVISÃO ── */
+function fillReviewScreen() {
+  const area = obSelectedArea === 'Outra'
+    ? document.getElementById('ob-area-outra').value
+    : obSelectedArea;
+
+  const fields = {
+    'rev-nome':    document.getElementById('ob-nome').value,
+    'rev-inicio':  formatDateBR(document.getElementById('ob-inicio').value),
+    'rev-termino': formatDateBR(document.getElementById('ob-termino').value),
+    'rev-valor':   document.getElementById('ob-valor').value || '—',
+    'rev-edital':  document.getElementById('ob-edital').value || '—',
+    'rev-area':    area || '—',
+    'rev-fonte':   document.getElementById('ob-fonte').value || '—',
+    'rev-orgao':   document.getElementById('ob-orgao').value || '—',
+    'rev-resp':    document.getElementById('ob-resp-nome').value,
+    'rev-email':   document.getElementById('ob-email').value,
+  };
+
+  Object.entries(fields).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  });
+}
+
+/* ── FINALIZAR ONBOARDING ── */
+function finishOnboarding() {
+  const area = obSelectedArea === 'Outra'
+    ? document.getElementById('ob-area-outra').value
+    : obSelectedArea;
+
+  /* Extrai versão curta da fonte para o header */
+  const fonteCompleta = document.getElementById('ob-fonte').value;
+  const fonteShort = fonteCompleta.split(' — ')[0];
+
+  const config = {
+    nome:       document.getElementById('ob-nome').value.trim(),
+    inicio:     document.getElementById('ob-inicio').value,
+    termino:    document.getElementById('ob-termino').value,
+    edital:     document.getElementById('ob-edital').value.trim(),
+    valor:      document.getElementById('ob-valor').value.trim(),
+    area:       area,
+    fonte:      fonteCompleta,
+    fonteShort: fonteShort,
+    esfera:     document.getElementById('ob-esfera').value,
+    orgao:      document.getElementById('ob-orgao').value.trim(),
+    respNome:   document.getElementById('ob-resp-nome').value.trim(),
+    respCargo:  document.getElementById('ob-resp-cargo').value.trim(),
+    respTel:    document.getElementById('ob-resp-tel').value.trim(),
+    respOrg:    document.getElementById('ob-resp-org').value.trim(),
+    respTipo:   document.getElementById('ob-resp-tipo').value,
+    status:     'Em execução',
+    criadoEm:   new Date().toISOString(),
+  };
+
+  saveConfig(config);
+
+  /* Salva credenciais */
+  const email = document.getElementById('ob-email').value.trim();
+  const senha = document.getElementById('ob-senha').value;
+  localStorage.setItem(KEY_AUTH, JSON.stringify({ email, hash: simpleHash(senha) }));
+  localStorage.setItem(KEY_SESSION, 'active');
+
+  showScreen('dashboard');
+  showToast('Dashboard configurado! Bem-vinda, ' + config.respNome.split(' ')[0] + '.');
+}
+
+/* ── UTILITÁRIOS ── */
+function showErr(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'block';
+}
+
+function clearErr(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
+}
+
+function togglePwd(id) {
+  const el = document.getElementById(id);
+  if (el) el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+function formatMoney(el) {
+  let v = el.value.replace(/\D/g, '');
+  if (!v) { el.value = ''; return; }
+  v = (parseInt(v, 10) / 100).toFixed(2);
+  el.value = v.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+/* Hash simples (não criptográfico) — suficiente para uso local */
+function simpleHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) - h) + str.charCodeAt(i);
+    h |= 0;
+  }
+  return h.toString(36);
+}
+
+/* ── FUNÇÃO DE RESET (use no console do navegador se esquecer a senha) ── */
+/* Para usar: abra o console (F12) e digite:  resetPassword()  */
+function resetPassword() {
+  const nova = prompt('Digite a nova senha (mínimo 8 caracteres):');
+  if (!nova || nova.length < 8) { alert('Senha muito curta.'); return; }
+  const auth = JSON.parse(localStorage.getItem(KEY_AUTH) || '{}');
+  auth.hash = simpleHash(nova);
+  localStorage.setItem(KEY_AUTH, JSON.stringify(auth));
+  alert('Senha redefinida com sucesso.');
+}
+
+/* ── LOGOUT ── */
+function logout() {
+  localStorage.removeItem(KEY_SESSION);
+  showScreen('login');
+  showToast('Sessão encerrada');
+}
+
+/* Sincroniza ícones do tema em todas as telas */
+const _origSetTheme = setTheme;
+window.setTheme = function(theme) {
+  _origSetTheme(theme);
+  ['login-icon-sun','ob-icon-sun'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = theme === 'dark' ? 'block' : 'none';
+  });
+  ['login-icon-moon','ob-icon-moon'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = theme === 'dark' ? 'none' : 'block';
+  });
+};
+/* Reaplica o tema para sincronizar os ícones das telas novas */
+setTheme(localStorage.getItem('gc-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+
+</script>
+</body>
+</html>
